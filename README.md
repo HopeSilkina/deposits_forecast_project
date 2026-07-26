@@ -110,27 +110,43 @@ The model underperformed (R² = -7.48) due to:
 - Small sample size (134 training records)
 - Time series nature of the data (trees don't capture temporal order)
 - This demonstrates the importance of choosing appropriate models for time series data
+
 ---
 
 ### 📁 Project Structure
+```
 deposits_forecast_project/
-│
 ├── data/
-│ ├── raw_deposits_data_2014_2026.csv
-│ └── processed_deposits_data.csv
-│
+│ └── processed_deposits_data.xlsx
 ├── notebooks/
 │ └── 01_EDA_Modeling_Deposits_Forecast.ipynb
-│
 ├── outputs/
 │ ├── forecast_results.csv
 │ ├── model_metrics.csv
 │ ├── forecast_plot.png
 │ ├── correlation_matrix.png
-│ └── feature_importance.png
-│
+│ ├── feature_importance.png
+│ ├── scatter_plots.png
+│ ├── actual_vs_predicted.png
+│ ├── depos_distribution.png
+│ └── time_series_all.png
 ├── README.md
 └── requirements.txt
+```
+
+### 📊 Output Files Description
+
+| File | Description |
+|------|-------------|
+| `forecast_results.csv` | Monthly deposit forecast values |
+| `model_metrics.csv` | Model performance metrics (RMSE, MAE, R²) |
+| `forecast_plot.png` | Visualization of forecast results |
+| `correlation_matrix.png` | Correlation matrix of features |
+| `feature_importance.png` | Feature importance analysis |
+| `scatter_plots.png` | Scatter plots of key variables |
+| `actual_vs_predicted.png` | Comparison of actual vs predicted values |
+| `depos_distribution.png` | Distribution of deposits over time |
+| `time_series_all.png` | Complete time series visualization |
 
 ---
 ### 🛠️ Technology Stack
