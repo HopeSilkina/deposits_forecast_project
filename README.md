@@ -1,6 +1,8 @@
 # Forecasting Household Deposits in Russia
 ## Macroeconomic Modeling & Time Series Analysis
 
+**Keywords:** Time Series Forecasting, Macroeconomic Analysis, Ridge Regression, Econometrics, Python, Machine Learning, Household Deposits, Russia
+
 ---
 
 ### 📌 Project Overview
@@ -70,6 +72,8 @@ To compare the effectiveness of different approaches, I implemented and evaluate
 
 ### 📈 Results & Key Findings
 
+**📊 For a complete analysis with detailed visualizations and economic interpretations, see [key_insights.md](key_insights.md).**
+
 **Best Performing Model:** Ridge Regression (alpha=1.0)
 
 **Performance Metrics (Test Set):**
@@ -113,6 +117,20 @@ The model underperformed (R² = -7.48) due to:
 
 ---
 
+### 🔍 Key Insights (Summary)
+
+| Insight | Finding |
+|---------|---------|
+| **Best Model** | Ridge Regression (R² = 0.8486) |
+| **Top Driver** | Past month deposits (DEPOS_lag_1) — strongest predictor |
+| **Economic Drivers** | Higher wages, service volume, and deposit rates increase deposits |
+| **Economic Draggers** | Inflation, USD exchange rate, and industrial production decrease deposits |
+| **Model Lesson** | Simple regularized models (Ridge) outperform complex models (Random Forest) on small time series data |
+
+**📊 Full analysis with detailed visualizations available in [key_insights.md](key_insights.md).**
+
+---
+
 ### 📁 Project Structure
 ```
 deposits_forecast_project/
@@ -131,6 +149,7 @@ deposits_forecast_project/
 │ ├── depos_distribution.png
 │ └── time_series_all.png
 ├── README.md
+├── key_insights.md
 └── requirements.txt
 ```
 
@@ -149,6 +168,7 @@ deposits_forecast_project/
 | `time_series_all.png` | Complete time series visualization |
 
 ---
+
 ### 🛠️ Technology Stack
 
 - **Language:** Python 3.9+
@@ -194,5 +214,5 @@ I'm a data analyst specializing in statistical modeling and econometric analysis
 - Currently expanding skills into Python-based Data Science & Machine Learning
 
 **Connect:**
-- **GitHub:** https://github.com/HopeSilkina
-- **Email:** tansion@mail.ru
+- **GitHub:** [HopeSilkina](https://github.com/HopeSilkina)
+- **Email:** [tansion@mail.ru](mailto:tansion@mail.ru)
