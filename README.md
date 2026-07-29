@@ -37,6 +37,10 @@ Understanding and predicting the volume of household deposits is crucial for fin
 
 **Source:** Data from data.vavt.ru
 
+**Files:**
+- `raw_deposits_data_2014_2026.xlsx` — original data as downloaded from the source
+- `processed_deposits_data.xlsx` — cleaned data used for modeling (includes feature engineering)
+
 **Target Variable:**
 - `DEPOS`: Volume of household deposits and other attracted funds (billion RUB)
 
@@ -135,7 +139,8 @@ The model underperformed (R² = -7.48) due to:
 ```
 deposits_forecast_project/
 ├── data/
-│ └── processed_deposits_data.xlsx
+│ ├── raw_deposits_data_2014_2026.xlsx     # Original data (raw, before processing)
+│ └── processed_deposits_data.xlsx         # Cleaned and preprocessed data
 ├── notebooks/
 │ └── 01_EDA_Modeling_Deposits_Forecast.ipynb
 │ └── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
