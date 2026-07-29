@@ -138,6 +138,7 @@ deposits_forecast_project/
 │ └── processed_deposits_data.xlsx
 ├── notebooks/
 │ └── 01_EDA_Modeling_Deposits_Forecast.ipynb
+│ └── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
 ├── outputs/
 │ ├── forecast_results.csv
 │ ├── model_metrics.csv
