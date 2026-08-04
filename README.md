@@ -146,15 +146,22 @@ deposits_forecast_project/
 │ └── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
 │ └── 02_Deep_Analysis_Deposits_Forecast_Ru.ipynb
 ├── outputs/
-│ ├── forecast_results.csv
-│ ├── model_metrics.csv
-│ ├── forecast_plot.png
-│ ├── correlation_matrix.png
-│ ├── feature_importance.png
-│ ├── scatter_plots.png
-│ ├── actual_vs_predicted.png
-│ ├── depos_distribution.png
-│ └── time_series_all.png
+│ ├── v1/
+│ │ ├── forecast_results.csv
+│ │ ├── model_metrics.csv
+│ │ ├── forecast_plot.png
+│ │ ├── correlation_matrix.png
+│ │ ├── feature_importance.png
+│ │ ├── scatter_plots.png
+│ │ ├── actual_vs_predicted.png
+│ │ ├── depos_distribution.png
+│ │ └── time_series_all.png
+│ └── v2/
+│ ├── decomposition_additive.png
+│ └── depos_trend.png
+│ ├── seasonal_component.png
+│ ├── seasonal_monthly_pattern.png
+│ ├── structural_break_analysis.png
 ├── README.md
 ├── key_insights.md
 ├── key_insights_2.md
@@ -190,11 +197,11 @@ deposits_forecast_project/
 
 | Correlation Matrix | Feature Importance |
 |--------------------|---------------------|
-| ![Correlation Matrix](outputs/correlation_matrix.png) | ![Feature Importance](outputs/feature_importance.png) |
+| ![Correlation Matrix](outputs/v1/correlation_matrix.png) | ![Feature Importance](outputs/v1/feature_importance.png) |
 
 | Scatter Plots | Forecast Plot |
 |---------------|---------------|
-| ![Scatter Plots](outputs/scatter_plots.png) | ![Forecast Plot](outputs/forecast_plot.png) |
+| ![Scatter Plots](outputs/v1/scatter_plots.png) | ![Forecast Plot](outputs/v1/forecast_plot.png) |
 
 ---
 
