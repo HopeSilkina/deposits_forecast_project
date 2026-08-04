@@ -144,6 +144,7 @@ deposits_forecast_project/
 ├── notebooks/
 │ └── 01_EDA_Modeling_Deposits_Forecast.ipynb
 │ └── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
+│ └── 02_Deep_Analysis_Deposits_Forecast_Ru.ipynb
 ├── outputs/
 │ ├── forecast_results.csv
 │ ├── model_metrics.csv
@@ -156,6 +157,7 @@ deposits_forecast_project/
 │ └── time_series_all.png
 ├── README.md
 ├── key_insights.md
+├── key_insights_2.md
 └── requirements.txt
 ```
 
@@ -198,6 +200,7 @@ deposits_forecast_project/
 
 ### 💡 Future Work
 
+- ✅ **Completed:** Deep time series analysis ([key_insights_2.md](key_insights_2.md))
 - Add seasonal components (month of year) to capture cyclical patterns
 - Test SARIMA or Prophet for explicit time series modeling
 - Explore LSTM for sequential prediction
