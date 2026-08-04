@@ -203,6 +203,12 @@ deposits_forecast_project/
 |---------------|---------------|
 | ![Scatter Plots](outputs/v1/scatter_plots.png) | ![Forecast Plot](outputs/v1/forecast_plot.png) |
 
+| Decomposition of Time Series |
+|------------------------------|
+| ![Decomposition](outputs/v2/decomposition_additive.png) |
+
+**For detailed analysis, see [key_insights_2.md](key_insights_2.md).**
+
 ---
 
 ### 💡 Future Work
