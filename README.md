@@ -76,8 +76,6 @@ To compare the effectiveness of different approaches, I implemented and evaluate
 
 ### 📈 Results & Key Findings
 
-**📊 For a complete analysis with detailed visualizations and economic interpretations, see [key_insights.md](key_insights.md).**
-
 **Best Performing Model:** Ridge Regression (alpha=1.0)
 
 **Performance Metrics (Test Set):**
@@ -118,6 +116,10 @@ The model underperformed (R² = -7.48) due to:
 - Small sample size (134 training records)
 - Time series nature of the data (trees don't capture temporal order)
 - This demonstrates the importance of choosing appropriate models for time series data
+
+**📊 For a complete analysis with detailed visualizations and economic interpretations, see [key_insights.md](key_insights.md).**
+
+**📊 For model interpretation (SHAP analysis & nonlinearity testing), see [key_insights_3.md](key_insights_3.md).**
 
 ---
 
@@ -206,8 +208,12 @@ deposits_forecast_project/
 | Decomposition of Time Series |
 |------------------------------|
 | ![Decomposition](outputs/v2/decomposition_additive.png) |
-
 **For detailed analysis, see [key_insights_2.md](key_insights_2.md).**
+
+| SHAP Summary (Feature Impact) |
+|------------------------------|
+| ![SHAP Summary](outputs/v2/shap_summary.png) |
+**For detailed analysis, see [key_insights_3.md](key_insights_3.md).**
 
 ---
 
