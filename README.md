@@ -164,6 +164,10 @@ deposits_forecast_project/
 │ ├── seasonal_component.png
 │ ├── seasonal_monthly_pattern.png
 │ ├── structural_break_analysis.png
+│ ├── shap_summary.png
+│ ├── shap_importance.png
+│ ├── shap_dependence.png
+│ ├── nonlinear_check.png
 ├── README.md
 ├── key_insights.md
 ├── key_insights_2.md
