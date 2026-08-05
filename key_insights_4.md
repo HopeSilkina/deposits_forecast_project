@@ -123,7 +123,7 @@
 
 **Визуализация:**
 
-![DEPOS vs WAGE с аномалиями](../outputs/v2/04_anomaly_wage.png)
+![DEPOS vs WAGE с аномалиями](outputs/v2/04_anomaly_wage.png)
 
 ---
 
@@ -133,7 +133,7 @@
 
 **Визуализация:**
 
-![DEPOS vs UNEM с covid и без](../outputs/v2/04_covid_unem.png)
+![DEPOS vs UNEM с covid и без](outputs/v2/04_covid_unem.png)
 
 ---
 
@@ -145,7 +145,7 @@
 
 **Визуализация:**
 
-![DEPOS vs CRED1 с кластерами](../outputs/v2/04_regime_cred1.png)
+![DEPOS vs CRED1 с кластерами](outputs/v2/04_regime_cred1.png)
 
 ---
 
