@@ -117,9 +117,12 @@ The model underperformed (R² = -7.48) due to:
 - Time series nature of the data (trees don't capture temporal order)
 - This demonstrates the importance of choosing appropriate models for time series data
 
-**📊 For a complete analysis with detailed visualizations and economic interpretations, see [key_insights.md](key_insights.md).**
+**📊 For detailed analysis by project stage:**
 
-**📊 For model interpretation (SHAP analysis & nonlinearity testing), see [key_insights_3.md](key_insights_3.md).**
+- [EDA & Baseline Models](key_insights.md) *(data exploration, Ridge, Linear, Random Forest)*
+- [Deep Time Series Analysis](key_insights_2.md) *(decomposition, seasonality, structural breaks, Chow test)*
+- [Model Interpretation (SHAP)](key_insights_3.md) *(SHAP analysis & nonlinearity testing)*
+- [Feature Engineering Results](key_insights_4.md) *(seasonal dummies, lags, post_2022, anomaly detection)*
 
 ---
 
