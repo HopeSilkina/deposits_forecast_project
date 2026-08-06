@@ -256,10 +256,13 @@ deposits_forecast_project/
 ### 💡 Future Work
 
 - ✅ **Completed:** Deep time series analysis ([key_insights_2.md](key_insights_2.md))
-- Add seasonal components (month of year) to capture cyclical patterns
+- ✅ **Completed:** Feature engineering & model improvement ([key_insights_3.md](key_insights_3.md))
+- ✅ **Completed:** Seasonal components (monthly dummies added and tested) ([key_insights_4.md](key_insights_4.md))
 - Test SARIMA or Prophet for explicit time series modeling
 - Explore LSTM for sequential prediction
 - Containerize with Docker + API for real-time inference
+
+**Note:** `key_insights_2.md`, `key_insights_3.md`, and `key_insights_4.md` are currently in Russian. English versions will be added upon project completion.
 
 ---
 
