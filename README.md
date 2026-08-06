@@ -138,6 +138,9 @@ The model underperformed (R² = -7.48) due to:
 ---
 
 ### 📁 Project Structure
+<details>
+<summary><b>Нажмите, чтобы развернуть структуру проекта</b></summary>
+
 ```
 deposits_forecast_project/
 ├── data/
@@ -178,6 +181,8 @@ deposits_forecast_project/
 ├── key_insights_4.md
 └── requirements.txt
 ```
+
+</details>
 
 ### 📊 Output Files Description
 
