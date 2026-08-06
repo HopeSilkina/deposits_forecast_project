@@ -147,6 +147,8 @@ deposits_forecast_project/
 │ └── 01_EDA_Modeling_Deposits_Forecast.ipynb
 │ └── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
 │ └── 02_Deep_Analysis_Deposits_Forecast_Ru.ipynb
+│ ├── 03_Model_Interpretation_Deposits_Forecast_Ru.ipynb
+│ └── 04_Feature_Engineering_Deposits_Forecast_Ru.ipynb
 ├── outputs/
 │ ├── v1/
 │ │ ├── forecast_results.csv
@@ -159,22 +161,30 @@ deposits_forecast_project/
 │ │ ├── depos_distribution.png
 │ │ └── time_series_all.png
 │ └── v2/
-│ ├── decomposition_additive.png
-│ └── depos_trend.png
-│ ├── seasonal_component.png
-│ ├── seasonal_monthly_pattern.png
-│ ├── structural_break_analysis.png
-│ ├── shap_summary.png
-│ ├── shap_importance.png
-│ ├── shap_dependence.png
-│ ├── nonlinear_check.png
+│ ├── 02_decomposition_additive.png
+│ ├── 02_depos_trend.png
+│ ├── 02_seasonal_component.png
+│ ├── 02_structural_break_analysis.png
+│ ├── 03_shap_summary.png
+│ ├── 03_shap_importance.png
+│ ├── 03_shap_dependence.png
+│ ├── 04_anomaly_wage.png
+│ ├── 04_covid_unem.png
+│ └── 04_regime_cred1.png
 ├── README.md
 ├── key_insights.md
 ├── key_insights_2.md
+├── key_insights_3.md
+├── key_insights_4.md
 └── requirements.txt
 ```
 
 ### 📊 Output Files Description
+
+#### v1 — Baseline Models
+
+<details>
+<summary><b>📊 Output Files Description (v1)</b> (нажмите, чтобы развернуть)</summary>
 
 | File | Description |
 |------|-------------|
@@ -187,6 +197,23 @@ deposits_forecast_project/
 | `actual_vs_predicted.png` | Comparison of actual vs predicted values |
 | `depos_distribution.png` | Distribution of deposits over time |
 | `time_series_all.png` | Complete time series visualization |
+
+</details>
+
+#### v2 — Deep Analysis & Feature Engineering
+
+<details>
+<summary><b>📊 Output Files Description (v2)</b> (нажмите, чтобы развернуть)</summary>
+
+| File | Description |
+|------|-------------|
+| `02_decomposition_additive.png` | Time series decomposition (trend + seasonality + residuals) |
+| `02_structural_break_analysis.png` | Chow test: trend change after December 2022 |
+| `03_shap_summary.png` | SHAP feature importance and direction of influence |
+| `04_anomaly_wage.png` | Wage anomaly detection (-2σ threshold) |
+| `04_regime_cred1.png` | Two-regime CRED1 clusters (split by DEPOS) |
+
+</details>
 
 ---
 
@@ -211,12 +238,12 @@ deposits_forecast_project/
 
 | Decomposition of Time Series |
 |------------------------------|
-| ![Decomposition](outputs/v2/decomposition_additive.png) |
+| ![Decomposition](outputs/v2/02_decomposition_additive.png) |
 **For detailed analysis, see [key_insights_2.md](key_insights_2.md).**
 
 | SHAP Summary (Feature Impact) |
 |------------------------------|
-| ![SHAP Summary](outputs/v2/shap_summary.png) |
+| ![SHAP Summary](outputs/v2/03_shap_summary.png) |
 **For detailed analysis, see [key_insights_3.md](key_insights_3.md).**
 
 ---
