@@ -291,6 +291,93 @@ The DEPOS series is **not stationary** — it has a strong upward trend (visible
 
 ---
 
+## 7.1. Full Model Metrics: Training vs Test Performance
+
+### 📊 Ridge Regression (alpha=1.0) — Complete Metrics
+
+To enable proper comparison with feature-engineered models (Block 4), we calculated comprehensive metrics on both training and test sets.
+
+| Dataset | Metric | Value |
+|---------|--------|-------|
+| **Training (n=122)** | R²_train | **0.9963** |
+| | R²_adj_train | **0.9959** |
+| | AIC | **1919.49** |
+| | BIC | **1958.75** |
+| | RSS | 34,219,584 |
+| **Test (n=12)** | R²_test | **0.8486** |
+| | RMSE | 916.32 bln RUB |
+| | MAE | 807.96 bln RUB |
+
+### ⚠️ Overfitting Assessment
+
+- **R²_train - R²_test = 0.1478** — moderate overfitting detected
+- The model explains **99.6% of training variance** but only **84.9% of test variance**
+- This gap suggests that adding more features (Feature Engineering in Block 4) could help, but regularization is crucial
+
+### 📊 Comparison with OLS (Full vs Reduced)
+
+| Model | Features | R²_test | RMSE_test | MAE_test |
+|-------|----------|---------|-----------|----------|
+| OLS (full, all features) | 13 | 0.8433 | 932.00 | 754.08 |
+| OLS (reduced, p<0.05) | 5 | 0.8474 | 919.85 | 736.24 |
+| **Ridge (alpha=1.0)** | **13** | **0.8486** | **916.32** | **807.96** |
+
+**Key insight:** Ridge with all features outperforms OLS with only significant features, confirming that even "insignificant" variables contribute useful information when properly regularized.
+
+---
+
+## 7.2. Residual Diagnostics (Training Set)
+
+**Why training set?** Residual diagnostics assess model assumptions (normality, homoscedasticity, independence). These should be verified on the data used for fitting, not on held-out test data.
+
+### 📊 Diagnostic Test Results
+
+| Test | Statistic | p-value | Result |
+|------|-----------|---------|--------|
+| **Normality** (Shapiro-Wilk) | W = 0.9923 | 0.7372 | ✅ Normal |
+| **Homoscedasticity** (Breusch-Pagan) | LM = 8.1052 | 0.0044 | ⚠️ Heteroscedasticity |
+| **Autocorrelation lag 1** (Breusch-Godfrey) | LM = 0.9888 | 0.3200 | ✅ No autocorrelation |
+| **Autocorrelation lag 4** (Breusch-Godfrey) | LM = 25.0489 | 0.0000 | ⚠️ Autocorrelation (seasonal) |
+
+### 🔬 Why Breusch-Godfrey instead of Durbin-Watson?
+
+| Aspect | Durbin-Watson | Breusch-Godfrey |
+|--------|---------------|-----------------|
+| **Lagged dependent variables** | ❌ Biased towards 2 | ✅ Unbiased |
+| **Higher-order autocorrelation** | ❌ Tests only lag 1 | ✅ Tests any lag order |
+| **Small sample power** | ⚠️ Lower | ✅ Higher |
+| **Our case** | DW = 1.794 (seems OK) | BG lag 4: p = 0.000 (reveals problem!) |
+
+**Key insight:** DW test would have missed the seasonal autocorrelation (lag 4) that Breusch-Godfrey detected. This seasonal pattern in residuals suggests that monthly dummy variables (added in Block 4) are well-justified.
+
+### 📈 Diagnostic Plots
+
+![Residual Diagnostics](outputs/v1/01_diagnostics_best_model.png)
+
+**Interpretation:**
+- **Histogram + Q-Q plot:** Residuals are approximately normal (slight right skew)
+- **Residuals vs Fitted:** Some heteroscedasticity visible (fan-shaped pattern at higher values)
+- **ACF plot:** Significant spike at lag 4 confirms seasonal autocorrelation
+
+---
+
+## 7.3. Model Comparison Framework (for Block 4)
+
+The following metrics will be used to compare baseline Ridge (13 features) with feature-engineered models (Block 4):
+
+| Criterion | Baseline Ridge | Interpretation |
+|-----------|---------------|----------------|
+| R²_train | 0.9963 | Reference for fit quality |
+| R²_adj_train | 0.9959 | Adjusted for 14 parameters |
+| AIC | 1919.49 | Baseline for model selection |
+| BIC | 1958.75 | Baseline with stronger penalty |
+| R²_test | 0.8486 | Reference for predictive power |
+| RMSE_test | 916.32 | Reference for error magnitude |
+
+**Target for Block 4:** Improve R²_test while maintaining or improving AIC/BIC.
+
+---
+
 ## 8. Ridge Regression Coefficients: What Drives Household Deposits?
 
 ### 🔺 Top Drivers (Increase Deposits)
@@ -342,56 +429,59 @@ The original alpha **(1.0) is already optimal**. Stronger regularization (alpha 
 
 ---
 
-## 10. Executive Summary
+## 10. Executive Summary (Updated)
 
 ### 🎯 Key Takeaways
 
-| # | Finding |
-|---|---------|
-| 1 | **Ridge Regression (alpha=1.0)** is the best model with R² = **0.8486** |
-| 2 | **Past deposits (lag 1, 3, 6 months)** are the strongest predictors — deposits have high inertia |
-| 3 | **Economic activity (SERV, WAGE, DEP1)** increases deposits — intuitive |
-| 4 | **Inflation (CPI), exchange rate (USDind), and industrial production (IPI)** decrease deposits |
-| 5 | **Random Forest failed** due to small sample size and non-sequential nature of trees |
-| 6 | **Multicollinearity is severe** (VIF > 100) — Ridge regularization is essential |
-| 7 | **DEPOS is non-stationary** — future work should consider SARIMA/Prophet |
+| # | Finding | Details |
+|---|---------|---------|
+| 1 | **Ridge Regression (alpha=1.0)** is the best baseline with R²_test = **0.8486** | Training: R² = 0.9963, AIC = 1919.49 |
+| 2 | **Past deposits (lag 1, 3, 6)** are the strongest predictors | DEPOS_lag_1 coefficient: +4,153.97 |
+| 3 | **Moderate overfitting** detected (R²_train - R²_test = 0.1478) | Feature Engineering (Block 4) should help |
+| 4 | **Seasonal autocorrelation** (lag 4) found in residuals | Monthly dummies are justified |
+| 5 | **Heteroscedasticity** present (Breusch-Pagan p = 0.0044) | Variance increases with predicted values |
+| 6 | **Random Forest failed** (R² = -7.48) | Small sample + time series = poor fit |
+| 7 | **Multicollinearity is severe** (VIF > 100) | Ridge regularization is essential |
+
+### 📊 Full Diagnostic Summary
+
+| Aspect | Result | Status |
+|--------|--------|--------|
+| Model fit (training) | R² = 0.9963 | ✅ Excellent |
+| Predictive power (test) | R² = 0.8486 | ✅ Good |
+| Overfitting | Gap = 0.1478 | ⚠️ Moderate |
+| Normality of residuals | Shapiro-Wilk p = 0.7372 | ✅ Normal |
+| Homoscedasticity | Breusch-Pagan p = 0.0044 | ⚠️ Heteroscedastic |
+| Autocorrelation (lag 1) | Breusch-Godfrey p = 0.3200 | ✅ None |
+| Autocorrelation (lag 4) | Breusch-Godfrey p = 0.0000 | ⚠️ Seasonal |
 
 ### 📈 Visual Patterns Discovered
 
-| Pattern | Variable | Description | Future Work |
-|---------|----------|-------------|-------------|
-| Slope change | DEPOS | Post-Dec 2022 growth acceleration | Dummy variable |
-| Exponential + seasonality | WAGE | Strong 12-month cycles | Seasonal component |
-| Crisis drop | SERV | April–May 2020 COVID-19 drop | COVID-19 dummy |
-| Non-linear | DEPOS vs DEP1 | Triangle pattern (semi-loops) | Polynomial terms |
-| Two regimes | DEPOS vs CRED1 | Positive vs negative slope clusters | Regime-switching model |
-| Parabolic spike | UNEM | COVID-19 peak (Sep 2020) | Quadratic term / COVID-19 dummy |
-| Extreme spikes | CPI, USDind | 2015 and 2022 crises | Dummy variables |
-
-### 💼 Business Implications
-
-- Deposits are **highly predictable (R² ~85%)** — useful for banks and policymakers.
-- **Deposit rates (DEP1) matter:** higher rates attract more deposits.
-- **Inflation and exchange rate volatility reduce deposits** — focus on economic stability.
+| Pattern | Variable | Description | Addressed In |
+|---------|----------|-------------|--------------|
+| Slope change | DEPOS | Post-Dec 2022 growth acceleration | Block 4 (`post_2022`) |
+| Exponential + seasonality | WAGE | Strong 12-month cycles | Block 4 (month dummies) |
+| Crisis drop | SERV | April–May 2020 COVID-19 drop | Block 4 (`covid`) |
+| Non-linear | DEPOS vs DEP1 | Triangle pattern (semi-loops) | Future work |
+| Two regimes | DEPOS vs CRED1 | Positive vs negative slope clusters | Block 4 (`regime_cred1`) |
+| Parabolic spike | UNEM | COVID-19 peak (Sep 2020) | Block 4 (`covid`) |
+| Extreme spikes | CPI, USDind | 2015 and 2022 crises | Future work |
+| Seasonal residuals | Model errors | Significant at lag 4 | Block 4 (month dummies) |
 
 ### 🚀 Next Steps
 
-| Step | Description |
-|------|-------------|
-| 1 | Add **seasonal components** (month of year) to capture December/January peaks |
-| 2 | Add **structural break dummies** for post-2022 slope change, COVID-19, and crisis periods |
-| 3 | Test **SARIMA or Prophet** for explicit time series modeling |
-| 4 | Use **LSTM** for deeper learning (if more data becomes available) |
-| 5 | Investigate **regime-switching models** for CRED1 two-cluster pattern |
-
----
-
-## 📝 Final Note
-
-This analysis demonstrates the power of combining **classical econometrics** (VIF, ADF, Durbin-Watson) with **modern machine learning** (Ridge, Random Forest) for macroeconomic forecasting. The results are interpretable, robust, and aligned with economic theory.
+| Step | Status | Description |
+|------|--------|-------------|
+| Baseline model | ✅ Done | Ridge (13 features, R²_test = 0.8486) |
+| Deep time series analysis | ✅ Done | Decomposition, Chow test, seasonality |
+| SHAP interpretation | ✅ Done | Feature importance and nonlinearity |
+| Feature Engineering | ✅ Done | 38 features, R²_test = 0.9422 |
+| Model comparison | 🔄 In progress | Compare baseline vs engineered models |
+| SARIMA/Prophet | ⬜ Planned | Explicit time series modeling |
+| Final forecast | ⬜ Planned | 2026-2027 prediction |
 
 ---
 
 **📁 Project Repository:** [HopeSilkina/deposits_forecast_project](https://github.com/HopeSilkina/deposits_forecast_project)  
 **👤 Author:** Nadezhda Silkina  
-**📅 Last Updated:** 2026
+**📅 Last Updated:** 11 August 2026 (added full training metrics and residual diagnostics)
