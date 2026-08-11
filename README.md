@@ -78,7 +78,19 @@ To compare the effectiveness of different approaches, I implemented and evaluate
 
 **Best Performing Model:** Ridge Regression (alpha=1.0)
 
-**Performance Metrics (Test Set):**
+#### Complete Model Metrics
+
+| Dataset | Metric | Value |
+|---------|--------|-------|
+| **Training (n=122)** | R²_train | **0.9963** |
+| | R²_adj_train | **0.9959** |
+| | AIC | **1919.49** |
+| | BIC | **1958.75** |
+| **Test (n=12)** | R²_test | **0.8486** |
+| | RMSE | 916.32 bln RUB |
+| | MAE | 807.96 bln RUB |
+
+#### Test Set Performance Comparison
 
 | Model | R² | MAE (Billion RUB) | RMSE (Billion RUB) |
 |-------|----|--------------------|---------------------|
@@ -89,6 +101,17 @@ To compare the effectiveness of different approaches, I implemented and evaluate
 | Random Forest | -7.4829 | 6319.14 | 6858.17 |
 
 *Reduced model uses only significant features (p < 0.05): WAGE, CPI, USDind, IPI, DEPOS_lag_1*
+
+#### Residual Diagnostics (Training Set)
+
+| Test | Result | Status |
+|------|--------|--------|
+| Normality (Shapiro-Wilk) | p = 0.7372 | ✅ Normal |
+| Homoscedasticity (Breusch-Pagan) | p = 0.0044 | ⚠️ Heteroscedasticity |
+| Autocorrelation lag 1 (Breusch-Godfrey) | p = 0.3200 | ✅ No autocorrelation |
+| Autocorrelation lag 4 (Breusch-Godfrey) | p = 0.0000 | ⚠️ Seasonal pattern |
+
+**⚠️ Key finding:** Breusch-Godfrey test detected seasonal autocorrelation (lag 4) that Durbin-Watson missed (DW = 1.794, appeared "normal"). This justifies adding monthly dummy variables in Feature Engineering (Block 4).
 
 **Top 5 Drivers of Household Deposits (Ridge):**
 1. **DEPOS_lag_1** (+4153.97) — strongest positive effect (past month deposits)
@@ -130,8 +153,11 @@ The model underperformed (R² = -7.48) due to:
 
 | Insight | Finding |
 |---------|---------|
-| **Best Model** | Ridge Regression (R² = 0.8486) |
+| **Best Model** | Ridge Regression (R²_test = 0.8486, R²_train = 0.9963) |
+| **Overfitting** | R² gap = 0.1478 (moderate) — feature engineering should help |
 | **Top Driver** | Past month deposits (DEPOS_lag_1) — strongest predictor |
+| **Seasonal Issue** | Residual autocorrelation at lag 4 — justifies monthly dummies |
+| **Heteroscedasticity** | Present (Breusch-Pagan p = 0.0044) — variance increases with predictions |
 | **Economic Drivers** | Higher wages, service volume, and deposit rates increase deposits |
 | **Economic Draggers** | Inflation, USD exchange rate, and industrial production decrease deposits |
 | **Model Lesson** | Simple regularized models (Ridge) outperform complex models (Random Forest) on small time series data |
@@ -159,6 +185,7 @@ deposits_forecast_project/
 │ ├── v1/
 │ │ ├── forecast_results.csv
 │ │ ├── model_metrics.csv
+│ │ ├── 01_diagnostics_best_model.png
 │ │ ├── forecast_plot.png
 │ │ ├── correlation_matrix.png
 │ │ ├── feature_importance.png
@@ -198,6 +225,7 @@ deposits_forecast_project/
 |------|-------------|
 | `forecast_results.csv` | Monthly deposit forecast values |
 | `model_metrics.csv` | Model performance metrics (RMSE, MAE, R²) |
+| `01_diagnostics_best_model.png` | Residual diagnostics: histogram, Q-Q plot, residuals vs fitted, ACF |
 | `forecast_plot.png` | Visualization of forecast results |
 | `correlation_matrix.png` | Correlation matrix of features |
 | `feature_importance.png` | Feature importance analysis |
@@ -258,12 +286,15 @@ deposits_forecast_project/
 
 ### 💡 Future Work
 
+- ✅ **Completed:** Baseline modeling with full diagnostics (Ridge, R²_test = 0.8486)
 - ✅ **Completed:** Deep time series analysis ([key_insights_2.md](key_insights_2.md))
-- ✅ **Completed:** Feature engineering & model improvement ([key_insights_3.md](key_insights_3.md))
-- ✅ **Completed:** Seasonal components (monthly dummies added and tested) ([key_insights_4.md](key_insights_4.md))
-- Test SARIMA or Prophet for explicit time series modeling
-- Explore LSTM for sequential prediction
-- Containerize with Docker + API for real-time inference
+- ✅ **Completed:** SHAP model interpretation ([key_insights_3.md](key_insights_3.md))
+- ✅ **Completed:** Feature engineering — 38 features, R²_test = 0.9422 ([key_insights_4.md](key_insights_4.md))
+- 🔄 **In Progress:** Cross-model comparison (baseline vs engineered)
+- ⬜ Test SARIMA or Prophet for explicit time series modeling
+- ⬜ Address residual autocorrelation (seasonal component)
+- ⬜ Final forecast for 2026-2027
+- ⬜ Containerize with Docker + API for real-time inference
 
 **Note:** `key_insights_2.md`, `key_insights_3.md`, and `key_insights_4.md` are currently in Russian. English versions will be added upon project completion.
 
