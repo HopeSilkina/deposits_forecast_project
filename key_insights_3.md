@@ -33,7 +33,7 @@
 
 ### 📈 Направление влияния
 
-![SHAP Summary Plot](outputs/v2/shap_summary.png)
+![SHAP Summary Plot](outputs/v2/03_shap_summary.png)
 
 - **Положительное влияние:** высокие значения признака → рост вкладов (`DEPOS_lag_1`, `SERV`, `DEP1`).
 - **Отрицательное влияние:** высокие значения признака → снижение вкладов (`CPI`, `USDind`, `IPI`).
@@ -44,7 +44,7 @@
 
 ### 📉 Зависимость SHAP от значения признака
 
-![SHAP Dependence Plot](outputs/v2/shap_dependence.png)
+![SHAP Dependence Plot](outputs/v2/03_shap_dependence.png)
 
 На примере `DEPOS_lag_1` видно:
 - Рост лага → рост влияния на прогноз, т.е. рост вкладов в прошлом месяце линейно увеличивает прогноз.
