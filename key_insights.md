@@ -86,7 +86,7 @@
 <details>
 <summary><b>📈 Graph: Time Series of All Indicators</b> (click to expand)</summary>
 
-![Time Series All](outputs/v1/time_series_all.png)
+![Time Series All](outputs/v1/01_time_series_all.png)
 
 </details>
 
@@ -203,7 +203,7 @@
 <details>
 <summary><b>📈 Graph: Scatter Plots — DEPOS vs All Predictors</b> (click to expand)</summary>
 
-![Scatter Plots](outputs/v1/scatter_plots.png)
+![Scatter Plots](outputs/v1/01_scatter_plots.png)
 
 </details>
 
