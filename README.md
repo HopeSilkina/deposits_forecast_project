@@ -111,15 +111,6 @@ The final forecast was generated under three macroeconomic scenarios ([Block 6](
 
 ---
 
-### 🛠️ Technology Stack
-
-- **Language:** Python 3.9+
-- **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `statsmodels`, `shap`
-- **Environment:** Jupyter Notebook / Google Colab
-- **Platform:** GitHub (portfolio hosting)
-
----
-
 ### 📁 Project Structure
 <details>
 <summary><b>Нажмите, чтобы развернуть структуру проекта</b></summary>
@@ -165,6 +156,7 @@ deposits_forecast_project/
 │ ├── 04_anomaly_wage.png
 │ ├── 04_covid_unem.png
 │ ├── 04_regime_cred1.png
+│ ├── 04_residuals_diagnostics_Manual_removal.png
 │ ├── 05_acf_pacf_analysis.png
 │ ├── 05_combined_model_comparison.png
 │ ├── 05_depos_series.png
@@ -202,6 +194,8 @@ deposits_forecast_project/
 | `01_forecast_results.csv` | Monthly deposit forecast values |
 | `01_model_metrics.csv` | Model performance metrics (RMSE, MAE, R²) |
 | `01_time_series_all.png` | Complete time series visualization of all indicators |
+| `01_actual_vs_predicted.png` | Actual vs predicted values scatter plot |
+| `01_depos_distribution.png` | Distribution of target variable (DEPOS) |
 
 </details>
 
@@ -231,7 +225,7 @@ deposits_forecast_project/
 ### 🛠️ Technology Stack
 
 - **Language:** Python 3.9+
-- **Libraries:** pandas, numpy, matplotlib, seaborn, scikit-learn, statsmodels
+- **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `statsmodels`, `shap`
 - **Environment:** Jupyter Notebook / Google Colab
 - **Platform:** GitHub (portfolio hosting)
 
