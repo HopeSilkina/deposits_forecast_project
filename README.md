@@ -144,16 +144,16 @@ deposits_forecast_project/
 │ └── 06_Final_Forecast_Deposits_2026_2027_Ru.ipynb
 ├── outputs/
 │ ├── v1/                      # Baseline Model Outputs
-│ │ ├── forecast_results.csv
-│ │ ├── model_metrics.csv
+│ │ ├── 01_forecast_results.csv
+│ │ ├── 01_model_metrics.csv
 │ │ ├── 01_diagnostics_best_model.png
-│ │ ├── forecast_plot.png
-│ │ ├── correlation_matrix.png
-│ │ ├── feature_importance.png
-│ │ ├── scatter_plots.png
-│ │ ├── actual_vs_predicted.png
-│ │ ├── depos_distribution.png
-│ │ └── time_series_all.png
+│ │ ├── 01_forecast_plot.png
+│ │ ├── 01_correlation_matrix.png
+│ │ ├── 01_feature_importance.png
+│ │ ├── 01_scatter_plots.png
+│ │ ├── 01_actual_vs_predicted.png
+│ │ ├── 01_depos_distribution.png
+│ │ └── 01_time_series_all.png
 │ └── v2/                       # Deep Analysis & Final Outputs
 │ ├── 02_decomposition_additive.png
 │ ├── 02_depos_trend.png
@@ -195,13 +195,13 @@ deposits_forecast_project/
 | File | Description |
 |------|-------------|
 | `01_diagnostics_best_model.png` | Residual diagnostics: histogram, Q-Q plot, residuals vs fitted, ACF |
-| `correlation_matrix.png` | Correlation matrix of all features |
-| `scatter_plots.png` | Scatter plots of DEPOS vs all predictors |
-| `feature_importance.png` | Feature importance analysis (Ridge coefficients) |
-| `forecast_plot.png` | Visualization of forecast results |
-| `forecast_results.csv` | Monthly deposit forecast values |
-| `model_metrics.csv` | Model performance metrics (RMSE, MAE, R²) |
-| `time_series_all.png` | Complete time series visualization of all indicators |
+| `01_correlation_matrix.png` | Correlation matrix of all features |
+| `01_scatter_plots.png` | Scatter plots of DEPOS vs all predictors |
+| `01_feature_importance.png` | Feature importance analysis (Ridge coefficients) |
+| `01_forecast_plot.png` | Visualization of forecast results |
+| `01_forecast_results.csv` | Monthly deposit forecast values |
+| `01_model_metrics.csv` | Model performance metrics (RMSE, MAE, R²) |
+| `01_time_series_all.png` | Complete time series visualization of all indicators |
 
 </details>
 
@@ -241,11 +241,11 @@ deposits_forecast_project/
 
 | Correlation Matrix | Feature Importance |
 |:---:|:---:|
-| [![Correlation Matrix](outputs/v1/correlation_matrix.png)](outputs/v1/correlation_matrix.png) | [![Feature Importance](outputs/v1/feature_importance.png)](outputs/v1/feature_importance.png) |
+| [![Correlation Matrix](outputs/v1/01_correlation_matrix.png)](outputs/v1/01_correlation_matrix.png) | [![Feature Importance](outputs/v1/01_feature_importance.png)](outputs/v1/01_feature_importance.png) |
 
 | Scatter Plots | Forecast Plot |
 |:---:|:---:|
-| [![Scatter Plots](outputs/v1/scatter_plots.png)](outputs/v1/scatter_plots.png) | [![Forecast Plot](outputs/v1/forecast_plot.png)](outputs/v1/forecast_plot.png) |
+| [![Scatter Plots](outputs/v1/01_scatter_plots.png)](outputs/v1/01_scatter_plots.png) | [![Forecast Plot](outputs/v1/01_forecast_plot.png)](outputs/v1/01_forecast_plot.png) |
 
 | Decomposition of Time Series | SHAP Summary (Feature Impact) |
 |:---:|:---:|
