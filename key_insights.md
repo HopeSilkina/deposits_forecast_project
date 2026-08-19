@@ -25,7 +25,7 @@
 
 **Timeframe:** January 2014 — February 2026 (146 monthly observations)  
 **Target Variable:** `DEPOS` — Volume of household deposits (billion RUB)  
-**Features:** 9 macroeconomic indicators + 4 lag features (1, 3, 6, 12 months)
+**Features:** 9 macroeconomic indicators + 4 lag features (1, 3, 6, 12 months) — *expanded to 38 features in Block 4*
 
 ### 📊 Summary Statistics
 
@@ -250,7 +250,7 @@
   - **Cluster 1:** Strong positive slope.
   - **Cluster 2:** Strong negative slope.
 - **💡 Future Work:** The two clusters may represent different economic regimes (pre-2022 vs post-2022). Consider a **regime-switching model**.
-  - ❌ **Tested in Block 4:** `regime_cred1` dummy — WORSENED model (-0.1148 R²), removed from final model
+  - ❌ **Tested in Block 4:** `regime_cred1` dummy — WORSENED model when added in isolation (-0.1148 R²), but included in final 38-feature model as its negative effect is compensated by other features
 
 </details>
 
