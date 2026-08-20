@@ -16,12 +16,12 @@ This project is the culmination of a comprehensive data science pipeline aimed a
 - **Tools:** Python (pandas, scikit-learn, statsmodels, SHAP), Jupyter Notebook, Git.
 
 **Project Structure (6 Key Stages):**
-1.  **EDA & Baseline Models:** Analysis of correlations and baseline Ridge Regression → [📊 Full Report](key_insights.md)
-2.  **Deep Time Series Analysis:** Trend, seasonality decomposition, and Chow test for structural breaks → [📊 Full Report](key_insights_2.md)
-3.  **Model Interpretation:** SHAP analysis to identify key drivers and nonlinearity testing → [📊 Full Report](key_insights_3.md)
-4.  **Feature Engineering:** Creation of 38 features to significantly boost model performance → [📊 Full Report](key_insights_4.md)
-5.  **Time Series Modeling (SARIMA):** Addressing autocorrelation and building a combined model → [📊 Full Report](key_insights_5.md)
-6.  **Final Forecast:** Scenario-based forecasting for 2026-2027 with confidence intervals → [📊 Full Report](key_insights_6_itog.md)
+1. **EDA & Baseline Models (Block 1):** Analysis of correlations and baseline Ridge Regression → [📊 Full Report](key_insights.md)
+2. **Deep Time Series Analysis (Block 2):** Trend, seasonality decomposition, and Chow test for structural breaks → [📊 Full Report](key_insights_2.md)
+3. **Model Interpretation (Block 3):** SHAP analysis to identify key drivers and nonlinearity testing → [📊 Full Report](key_insights_3.md)
+4. **Feature Engineering (Block 4):** Creation of 38 features to significantly boost model performance → [📊 Full Report](key_insights_4.md)
+5. **Time Series Modeling (SARIMA) (Block 5):** Addressing autocorrelation and building a combined model → [📊 Full Report](key_insights_5.md)
+6. **Final Forecast (Block 6):** Scenario-based forecasting for 2026-2027 with confidence intervals → [📊 Full Report](key_insights_6_itog.md)
 
 **Project Goal:** Develop a robust forecasting model for `DEPOS` (household deposits in billion RUB) and identify key macroeconomic drivers to inform financial and policy decisions.
 
