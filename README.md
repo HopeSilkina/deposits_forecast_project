@@ -111,6 +111,26 @@ The final forecast was generated under three macroeconomic scenarios ([Block 6](
 
 ---
 
+### 📈 Visual Outputs
+
+| Correlation Matrix | Feature Importance |
+|:---:|:---:|
+| [![Correlation Matrix](outputs/v1/01_correlation_matrix.png)](outputs/v1/01_correlation_matrix.png) | [![Feature Importance](outputs/v1/01_feature_importance.png)](outputs/v1/01_feature_importance.png) |
+
+| Scatter Plots | Forecast Plot |
+|:---:|:---:|
+| [![Scatter Plots](outputs/v1/01_scatter_plots.png)](outputs/v1/01_scatter_plots.png) | [![Forecast Plot](outputs/v1/01_forecast_plot.png)](outputs/v1/01_forecast_plot.png) |
+
+| Decomposition of Time Series | SHAP Summary (Feature Impact) |
+|:---:|:---:|
+| [![Decomposition](outputs/v2/02_decomposition_additive.png)](outputs/v2/02_decomposition_additive.png)<br>*For detailed analysis, see [key_insights_2.md](key_insights_2.md)* | [![SHAP Summary](outputs/v2/03_shap_summary.png)](outputs/v2/03_shap_summary.png)<br>*For detailed analysis, see [key_insights_3.md](key_insights_3.md)* |
+
+| Combined Model Comparison | Final Forecast (2026-2027) |
+|:---:|:---:|
+| [![Combined Model](outputs/v2/05_combined_model_comparison.png)](outputs/v2/05_combined_model_comparison.png)<br>*For detailed analysis, see [key_insights_5.md](key_insights_5.md)* | [![Final Forecast](outputs/v2/06_final_forecast_2026_2027.png)](outputs/v2/06_final_forecast_2026_2027.png)<br>*For detailed analysis, see [key_insights_6_itog.md](key_insights_6_itog.md)* |
+
+---
+
 ### 📁 Project Structure
 <details>
 <summary><b>Нажмите, чтобы развернуть структуру проекта</b></summary>
@@ -228,26 +248,6 @@ deposits_forecast_project/
 - **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `statsmodels`, `shap`
 - **Environment:** Jupyter Notebook / Google Colab
 - **Platform:** GitHub (portfolio hosting)
-
----
-
-### 📈 Visual Outputs
-
-| Correlation Matrix | Feature Importance |
-|:---:|:---:|
-| [![Correlation Matrix](outputs/v1/01_correlation_matrix.png)](outputs/v1/01_correlation_matrix.png) | [![Feature Importance](outputs/v1/01_feature_importance.png)](outputs/v1/01_feature_importance.png) |
-
-| Scatter Plots | Forecast Plot |
-|:---:|:---:|
-| [![Scatter Plots](outputs/v1/01_scatter_plots.png)](outputs/v1/01_scatter_plots.png) | [![Forecast Plot](outputs/v1/01_forecast_plot.png)](outputs/v1/01_forecast_plot.png) |
-
-| Decomposition of Time Series | SHAP Summary (Feature Impact) |
-|:---:|:---:|
-| [![Decomposition](outputs/v2/02_decomposition_additive.png)](outputs/v2/02_decomposition_additive.png)<br>*For detailed analysis, see [key_insights_2.md](key_insights_2.md)* | [![SHAP Summary](outputs/v2/03_shap_summary.png)](outputs/v2/03_shap_summary.png)<br>*For detailed analysis, see [key_insights_3.md](key_insights_3.md)* |
-
-| Combined Model Comparison | Final Forecast (2026-2027) |
-|:---:|:---:|
-| [![Combined Model](outputs/v2/05_combined_model_comparison.png)](outputs/v2/05_combined_model_comparison.png)<br>*For detailed analysis, see [key_insights_5.md](key_insights_5.md)* | [![Final Forecast](outputs/v2/06_final_forecast_2026_2027.png)](outputs/v2/06_final_forecast_2026_2027.png)<br>*For detailed analysis, see [key_insights_6_itog.md](key_insights_6_itog.md)* |
 
 ---
 
