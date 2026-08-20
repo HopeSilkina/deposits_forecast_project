@@ -2,7 +2,7 @@
 
 **Project:** Macroeconomic Modeling & Time Series Analysis  
 **Author:** Nadezhda Silkina  
-**Date:** 18 August 2026  
+**Date:** 20 August 2026  
 
 ---
 
@@ -78,6 +78,8 @@
 
 
 </details>
+
+📊 **Full correlation matrix** is available in the [Visual Outputs](#visual-outputs) section.
 
 ---
 
@@ -606,4 +608,4 @@ The original alpha **(1.0) is already optimal**. Stronger regularization (alpha 
 
 **📁 Project Repository:** [HopeSilkina/deposits_forecast_project](https://github.com/HopeSilkina/deposits_forecast_project)  
 **👤 Author:** Nadezhda Silkina  
-**📅 Last Updated:** 18 August 2026
+**📅 Last Updated:** 20 August 2026
