@@ -55,6 +55,13 @@
 
 ## 2. Correlation Analysis
 
+<details>
+<summary><b>📊 Full Correlation Matrix</b> (click to expand)</summary>
+
+![Correlation Matrix](outputs/v1/01_correlation_matrix.png)
+
+</details>
+
 ### 📈 Strongest Positive Correlations with DEPOS
 
 | Rank | Feature | Correlation | Interpretation |
@@ -78,8 +85,6 @@
 
 
 </details>
-
-📊 **Full correlation matrix** is available in the [Visual Outputs](#visual-outputs) section.
 
 ---
 
