@@ -106,7 +106,7 @@
 - **December 2022 onward:** Clear **change in slope** — the growth rate accelerated significantly.
 - **Seasonality:** Not strongly expressed, but visible in December/January peaks.
 - **💡 Future Work:** Consider introducing a **dummy variable for slope change** (post-Dec 2022) to capture this structural break.
-  - ✅ **Addressed in Block 4:** `post_2022` dummy (+0.0427 R² improvement)
+  - ✅ **Accounted for in Block 4:** `post_2022` dummy (+0.0427 R² improvement)
   - ✅ **Confirmed in Block 2:** Chow test p < 0.05
  
 </details>
@@ -118,7 +118,7 @@
 - **First value (Jan 2014):** 29,255 RUB  
   **Last value (Dec 2025):** 139,727 RUB — **~4.8x increase**.
 - Strong correlation with DEPOS (0.980).
-- ✅ **Addressed in Block 4:** `WAGE_lag_1` — top feature (+0.0815 R² improvement)
+- ✅ **Accounted for in Block 4:** `WAGE_lag_1` — top feature (+0.0815 R² improvement)
 
 </details>
 
@@ -129,7 +129,7 @@
 - **Notable drop:** April–May 2020 (COVID-19 lockdown) — from ~850 to ~550 billion RUB.
 - **Recovery:** Full recovery by mid-2021, continued linear growth afterward.
 - **💡 Future Work:** Consider a **COVID-19 dummy** for April–May 2020.
-  - ✅ **Addressed in Block 4:** `covid` dummy (+0.0083 R² improvement)
+  - ✅ **Accounted for in Block 4:** `covid` dummy (+0.0083 R² improvement)
 
 </details>
 
@@ -180,9 +180,9 @@
 - **Overall negative trend:** from ~1.2% to ~0.3%.
 - **COVID-19 spike:** March 2020 – January 2022, with a parabolic shape peaking at **4.9%** (Sep 2020).
 - **💡 Future Work:** Consider a **quadratic term** or **COVID-19 dummy** for this period.
-  - ✅ **Addressed in Block 4:** `covid` dummy
-  - ✅ **Addressed in Block 3:** UNEM² tested (+0.0030 R², partial confirmation)
-  - ✅ **Addressed in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
+  - ✅ **Accounted for in Block 4:** `covid` dummy
+  - ✅ **Accounted for in Block 3:** UNEM² tested (+0.0030 R², partial confirmation)
+  - ✅ **Accounted for in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
 
 </details>
 
@@ -223,7 +223,7 @@
 - Main cloud follows the linear trend line.
 - **Interesting pattern:** A small group of points lies **below the trend line**, moving **parallel** to it and diverging as WAGE increases.
 - **💡 Future Work:** Investigate these points — they may represent specific time periods (e.g., crisis years).
-  - ✅ **Addressed in Block 4:** `anomaly_wage` dummy with -2σ threshold (+0.0264 R² improvement, 5 anomalies identified)
+  - ✅ **Accounted for in Block 4:** `anomaly_wage` dummy with -2σ threshold (+0.0264 R² improvement, 5 anomalies identified)
 
 </details>
 
@@ -245,7 +245,7 @@
 - **Interesting pattern:** Below DEPOS ≈ 33,000 and DEP1 < 13, points align almost perfectly along the **hypotenuse of a triangle**.
 - **💡 Future Work:** This non-linear pattern could justify **polynomial terms** or **interaction effects**.
   - ℹ️ **Tested in Block 3:** DEP1² NOT confirmed (-0.0003 R²)
-  - ✅ **Addressed in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
+  - ✅ **Accounted for in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
 
 </details>
 
@@ -290,7 +290,7 @@
   - **Cluster 1:** Negative slope from (0.4, 35,000) to (1.3, 17,000).
   - **Cluster 2:** Points parallel to the UNEM axis (0.7 to 5.0).
 - **💡 Future Work:** The second cluster corresponds to the COVID-19 period — consider **COVID-19 dummy**.
-  - ✅ **Addressed in Block 4:** `covid` dummy (+0.0083 R² improvement)
+  - ✅ **Accounted for in Block 4:** `covid` dummy (+0.0083 R² improvement)
 
 </details>
 
