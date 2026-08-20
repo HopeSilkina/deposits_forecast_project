@@ -583,7 +583,7 @@ The original alpha **(1.0) is already optimal**. Stronger regularization (alpha 
 | Predictive power (test) | R² = 0.8486 | ✅ Good |
 | Overfitting | Gap = 0.1477 | ⚠️ Moderate (reduced to 0.0565 in Block 4) |
 | Normality of residuals | Shapiro-Wilk p = 0.7372 | ✅ Normal |
-| Homoscedasticity | Breusch-Pagan p = 0.0044 | ⚠️ Heteroscedastic (fixed in Block 4: p = 0.787) |
+| Homoscedasticity | Breusch-Pagan p = 0.0044 | ⚠️ Heteroscedastic |
 | Autocorrelation (lag 1) | Breusch-Godfrey p = 0.3200 | ✅ None |
 | Autocorrelation (lag 4) | Breusch-Godfrey p = 0.0000 | ⚠️ Seasonal (addressed in Block 5) |
 
