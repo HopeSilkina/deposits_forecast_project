@@ -512,7 +512,7 @@ Full comparison available in [Block 4](key_insights_4.md).
 
 ## 8. Ridge Regression Coefficients: What Drives Household Deposits?
 
-### 🔺 Top Drivers (Increase Deposits)
+### 🔺 Top Positive Drivers (Increase Deposits)
 
 | Rank | Feature | Coefficient | Interpretation |
 |------|---------|-------------|----------------|
