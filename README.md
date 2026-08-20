@@ -56,14 +56,14 @@ Understanding and predicting household deposits is vital for:
 
 ### 🧠 Models & Methodology
 
-Several approaches were implemented and compared across the 6 project blocks ([Block 1](key_insights.md), [Block 4](key_insights_4.md), [Block 5](key_insights_5.md)):
+Several approaches were implemented and compared across the project:
 
 | Model Type | Key Findings |
 | :--- | :--- |
-| **Baseline (OLS, Ridge)** | Best baseline model: **Ridge (alpha=1.0)** achieved R²_test = 0.8486 ([details](key_insights.md#7-model-performance-comparison)). |
-| **Feature Engineering** | Added 25 new features (lags, seasonality dummies, `post_2022`). **Full Ridge (38 features)** achieved R²_test = 0.9422 ([details](key_insights_4.md#3-результаты-модели-с-новыми-признаками)). |
+| **Baseline (OLS, Ridge)** | Best baseline model: **Ridge (alpha=1.0)** achieved R²_test = 0.8486 ([Block 1](key_insights.md#7-model-performance-comparison)). |
+| **Feature Engineering** | Added 25 new features (lags, seasonality dummies, `post_2022`). **Full Ridge (38 features)** achieved R²_test = 0.9422 ([Block 4](key_insights_4.md#3-результаты-модели-с-новыми-признаками)). |
 | **Random Forest** | Failed significantly (R²_test = -7.48) due to the small sample size and time series nature of the data, highlighting the importance of model selection. |
-| **SARIMA/SARIMAX** | SARIMA successfully eliminated autocorrelation but failed on forecasting (R²_test < 0). SARIMAX with exogenous variables suffered severe overfitting ([details](key_insights_5.md#10-итоговое-сравнение-всех-моделей)). |
+| **SARIMA/SARIMAX** | SARIMA successfully eliminated autocorrelation but failed on forecasting (R²_test < 0). SARIMAX with exogenous variables suffered severe overfitting ([Block 5](key_insights_5.md#10-итоговое-сравнение-всех-моделей)). |
 | **Combined Model** | **Ridge + SARIMA** successfully removed residual autocorrelation from the Ridge model (Ljung-Box p = 0.2982), making it the best choice for **interval forecasting**. |
 
 **Final Conclusion:** The **Full Ridge (38 features) model from Block 4** was selected as the best for point forecasting ([Block 4](key_insights_4.md#7-итоговые-выводы)). The **Combined (Ridge + SARIMA) model** was recommended for interval forecasting due to its uncorrelated residuals ([Block 5](key_insights_5.md#11-итоговые-выводы)).
