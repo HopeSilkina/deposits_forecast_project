@@ -1,4 +1,4 @@
-# 📊 Key Insights: Forecasting Household Deposits in Russia
+# 📊 EDA & Baseline Models: Forecasting Household Deposits in Russia
 
 **Project:** Macroeconomic Modeling & Time Series Analysis  
 **Author:** Nadezhda Silkina  
