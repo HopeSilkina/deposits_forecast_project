@@ -104,7 +104,7 @@
 
 - **2014–2023:** Approximate **linear growth** with minor seasonal deviations.
 - **December 2022 onward:** Clear **change in slope** — the growth rate accelerated significantly.
-- **Seasonality:** Not strongly expressed, but visible in December/January peaks.
+- **Seasonality:** Not visually dominant, but statistically significant (confirmed in Block 2).
 - **💡 Future Work:** Consider introducing a **dummy variable for slope change** (post-Dec 2022) to capture this structural break.
   - ✅ **Accounted for in Block 4:** `post_2022` dummy (+0.0427 R² improvement)
   - ✅ **Confirmed in Block 2:** Chow test p < 0.05
@@ -386,6 +386,7 @@ The DEPOS series is **not stationary** — it has a strong upward trend (visible
 | Random Forest | -7.4829 | 6,319.14 | 6,858.17 | 10.21% |
 
 *Reduced model uses only significant features (p < 0.05): WAGE, CPI, USDind, IPI, DEPOS_lag_1*
+*MAPE is the Mean Absolute Percentage Error — a 10% error means forecasts deviate from actuals by 10% on average.*
 
 ### 🏆 Best Model: Ridge Regression (alpha=1.0)
 
@@ -595,7 +596,7 @@ The original alpha **(1.0) is already optimal**. Stronger regularization (alpha 
 | Exponential + seasonality | WAGE | Strong 12-month cycles | ✅ Block 4 (`WAGE_lag_1`, +0.0815) |
 | Crisis drop | SERV | April–May 2020 COVID-19 drop | ✅ Block 4 (`covid`, +0.0083) |
 | Non-linear | DEPOS vs DEP1 | Triangle pattern (semi-loops) | ✅ Block 4 (UNEM×DEP1, +0.0221) |
-| Two regimes | DEPOS vs CRED1 | Positive vs negative slope clusters | ❌ Block 4 (`regime_cred1` — removed, -0.1148) |
+| Two regimes | DEPOS vs CRED1 | Positive vs negative slope clusters | ❌ Block 4 (`regime_cred1` tested, -0.1148 in isolation, but included in final model |
 | Parabolic spike | UNEM | COVID-19 peak (Sep 2020) | ✅ Block 4 (`covid`, +0.0083) |
 | Extreme spikes | CPI, USDind | 2015 and 2022 crises | ℹ️ Not added (no significant improvement) |
 | Seasonal residuals | Model errors | Significant at lag 4 | ✅ Block 5 (SARIMA with s=12) |
