@@ -522,7 +522,7 @@ Full comparison available in [Block 4](key_insights_4.md).
 | 4 | **SERV** | **+591.35** | Economic activity drives savings |
 | 5 | **DEP1** | **+434.42** | Higher rates attract more deposits |
 
-### 🔻 Top Draggers (Decrease Deposits)
+### 🔻 Top Negative Drivers (Decrease Deposits)
 
 | Rank | Feature | Coefficient | Interpretation |
 |------|---------|-------------|----------------|
