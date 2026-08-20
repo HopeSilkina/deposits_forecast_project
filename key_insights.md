@@ -575,7 +575,7 @@ The original alpha **(1.0) is already optimal**. Stronger regularization (alpha 
 | 6 | **Random Forest failed** (R² = -7.48) | Small sample + time series = poor fit |
 | 7 | **Multicollinearity is severe** (VIF > 100) | Ridge regularization is essential |
 
-### 📊 Full Diagnostic Summary
+### 📊 Full Diagnostic Summary — Ridge (alpha=1.0), 13 features
 
 | Aspect | Result | Status |
 |--------|--------|--------|
