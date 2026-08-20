@@ -448,6 +448,8 @@ To enable proper comparison with feature-engineered models (Block 4), we calcula
 
 ## 7.2. Residual Diagnostics (Training Set)
 
+**Model:** Ridge Regression (alpha=1.0) — best baseline model from Section 7.
+
 **Why training set?** Residual diagnostics assess model assumptions (normality, homoscedasticity, independence). These should be verified on the data used for fitting, not on held-out test data.
 
 ### 📊 Diagnostic Test Results
