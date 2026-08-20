@@ -96,7 +96,7 @@ The final forecast was generated under three macroeconomic scenarios ([Block 6](
 | **Baseline (Most Likely)** | **70,046** billion RUB | **+8.1%** |
 | **Optimistic** | 70,934 billion RUB | +9.5% |
 | **Pessimistic** | 69,353 billion RUB | +7.0% |
-| **95% Confidence Interval (Baseline)** | 69,350 — 70,742 billion RUB | — |
+| **95% Prediction Interval (Baseline)** | 69,350 — 70,742 billion RUB | — |
 
 *Current level (Feb 2026): 64,794 billion RUB.*
 
