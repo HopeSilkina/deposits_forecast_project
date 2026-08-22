@@ -1,392 +1,392 @@
-# 📊 Модели временных рядов: SARIMA
+# 📊 Time Series Models: SARIMA
 
-**Проект:** Часть 5 — моделирование временных рядов  
-**Автор:** Надежда Силкина  
-**Дата:** 22.08.2026  
-
----
-
-## 📌 Содержание
-
-1. [Методологическое обоснование](#1-методологическое-обоснование)
-2. [Анализ стационарности](#2-анализ-стационарности-ряда-depos)
-3. [Анализ ACF/PACF](#3-анализ-acfpacf-и-определение-сезонности)
-4. [Подбор параметров SARIMA](#4-подбор-параметров-sarima)
-5. [Диагностика SARIMA](#5-диагностика-sarima)
-6. [SARIMAX с экзогенными переменными](#6-sarimax-с-экзогенными-переменными)
-7. [Комбинированная модель](#7-комбинированная-модель-полная-ridge--sarima)
-8. [SARIMAX с ключевыми переменными](#8-sarimax-с-ключевыми-переменными)
-9. [Итоговое сравнение](#9-итоговое-сравнение-всех-моделей)
-10. [Итоговые выводы](#10-итоговые-выводы)
+**Project:** Part 5 — time series modeling  
+**Author:** Nadezhda Silkina  
+**Date:** 22.08.2026  
 
 ---
 
-## 📌 Введение
+## 📌 Table of Contents
 
-Этот документ содержит результаты моделирования временных рядов с помощью SARIMA, SARIMAX и комбинированной модели. Основные задачи:
-1. Обосновать выбор SARIMA вместо Prophet
-2. Построить оптимальную SARIMA-модель с некоррелированными остатками
-3. Оценить SARIMAX с экзогенными переменными (полный и сокращенный набор)
-4. Проверить комбинированный подход (Полная Ridge + SARIMA)
-5. Сравнить с полной Ridge-моделью из блока 4 (38 признаков)
+1. [Methodological Justification](#1-methodological-justification)
+2. [Stationarity Analysis](#2-stationarity-analysis-of-the-depos-series)
+3. [ACF/PACF Analysis](#3-acfpacf-analysis-and-seasonality-identification)
+4. [SARIMA Parameter Selection](#4-sarima-parameter-selection)
+5. [SARIMA Diagnostics](#5-sarima-diagnostics)
+6. [SARIMAX with Exogenous Variables](#6-sarimax-with-exogenous-variables)
+7. [Combined Model](#7-combined-model-full-ridge--sarima)
+8. [SARIMAX with Key Variables](#8-sarimax-with-key-variables)
+9. [Final Comparison](#9-final-comparison-of-all-models)
+10. [Final Conclusions](#10-final-conclusions)
 
 ---
 
-## 1. Методологическое обоснование
+## 📌 Introduction
 
-### 🔍 Проблема: автокорреляция 4-го порядка
+This document presents the results of time series modeling using SARIMA, SARIMAX, and a combined model. Main objectives:
+1. Justify the choice of SARIMA over Prophet
+2. Build an optimal SARIMA model with uncorrelated residuals
+3. Evaluate SARIMAX with exogenous variables (full and reduced sets)
+4. Test the combined approach (Full Ridge + SARIMA)
+5. Compare with the full Ridge model from Block 4 (38 features)
 
-Во всех предыдущих моделях (базовая Ridge, полная Ridge с 38 признаками) диагностика остатков выявила значимую автокорреляцию 4-го порядка (тест Бройша-Годфри, p < 0.05).
+---
 
-| Модель | BG test (lag 4) | p-value |
+## 1. Methodological Justification
+
+### 🔍 Problem: 4th-Order Autocorrelation
+
+In all previous models (baseline Ridge, full Ridge with 38 features), residual diagnostics revealed significant 4th-order autocorrelation (Breusch-Godfrey test, p < 0.05).
+
+| Model | BG test (lag 4) | p-value |
 |--------|-----------------|---------|
-| Базовая Ridge (13 признаков) | 25.05 | 0.0000 |
-| Полная Ridge (38 признаков) | 15.31 | 0.0037 |
+| Baseline Ridge (13 features) | 25.05 | 0.0000 |
+| Full Ridge (38 features) | 15.31 | 0.0037 |
 
-### Почему не Prophet?
+### Why Not Prophet?
 
-| Критерий | Prophet | SARIMA |
+| Criterion | Prophet | SARIMA |
 |----------|---------|--------|
-| Моделирование автокорреляции | ❌ Нет | ✅ Да (AR/MA) |
-| Сезонность | Ряды Фурье | Сезонные AR/MA |
-| Учет лагов ошибок | ❌ Нет | ✅ Да |
-| Диагностика автокорреляции | ❌ Нет | ✅ Ljung-Box |
+| Autocorrelation modeling | ❌ No | ✅ Yes (AR/MA) |
+| Seasonality | Fourier series | Seasonal AR/MA |
+| Lagged error handling | ❌ No | ✅ Yes |
+| Autocorrelation diagnostics | ❌ No | ✅ Ljung-Box |
 
-**Вывод:** SARIMA выбран, так как явно моделирует автокорреляцию — ключевую проблему всех предыдущих моделей.
+**Conclusion:** SARIMA was chosen because it explicitly models autocorrelation — the key problem of all previous models.
 
 ---
 
-## 2. Анализ стационарности ряда DEPOS
+## 2. Stationarity Analysis of the DEPOS Series
 
-| Тест | Статистика | p-value | Критерий | Вывод |
+| Test | Statistic | p-value | Criterion | Conclusion |
 |------|-----------|---------|----------|-------|
-| ADF | 0.3935 | 0.9813 | p < 0.05 → стационарен | Нестационарный ❌ |
-| KPSS | 0.3104 | 0.0100 | p > 0.05 → стационарен | Нестационарный ❌ |
+| ADF | 0.3935 | 0.9813 | p < 0.05 → stationary | Non-stationary ❌ |
+| KPSS | 0.3104 | 0.0100 | p > 0.05 → stationary | Non-stationary ❌ |
 
-**Примечание:** ADF и KPSS имеют противоположные гипотезы:
-- ADF: H₀ = ряд нестационарный, H₁ = ряд стационарный
-- KPSS: H₀ = ряд стационарный, H₁ = ряд нестационарный
+**Note:** ADF and KPSS have opposite hypotheses:
+- ADF: H₀ = series is non-stationary, H₁ = series is stationary
+- KPSS: H₀ = series is stationary, H₁ = series is non-stationary
 
-### Определение порядка дифференцирования
+### Determining the Order of Differencing
 
-| Разность | ADF stat | ADF p | KPSS p | Вывод |
+| Difference | ADF stat | ADF p | KPSS p | Conclusion |
 |----------|----------|-------|--------|-------|
-| d=0 | 0.3935 | 0.9813 | 0.0100 | Нестационарна ❌ |
-| d=1 | -0.6957 | 0.8479 | 0.0100 | Нестационарна ❌ |
-| **d=2** | **-8.1477** | **0.0000** | **0.1000** | **Стационарна ✅** |
+| d=0 | 0.3935 | 0.9813 | 0.0100 | Non-stationary ❌ |
+| d=1 | -0.6957 | 0.8479 | 0.0100 | Non-stationary ❌ |
+| **d=2** | **-8.1477** | **0.0000** | **0.1000** | **Stationary ✅** |
 
-**Вывод:** Требуется двукратное дифференцирование (d=2).
+**Conclusion:** Second-order differencing (d=2) is required.
 
 <details>
-<summary><b>📈 График: Дифференцирование ряда</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: Differencing Analysis</b> (click to expand)</summary>
 
 ![Differencing Analysis](outputs/v2/05_diff_analysis.png)
 
-**Наблюдения:**
-- Верхняя панель (d=0): исходный ряд с явным восходящим трендом
-- Средняя панель (d=1): первая разность — тренд устранен, но ряд все еще нестационарен (ADF p=0.8479)
-- Нижняя панель (d=2): вторая разность — ряд стационарен (ADF p=0.0000, KPSS p=0.1000)
+**Observations:**
+- Top panel (d=0): original series with a clear upward trend
+- Middle panel (d=1): first difference — trend removed, but series still non-stationary (ADF p=0.8479)
+- Bottom panel (d=2): second difference — series is stationary (ADF p=0.0000, KPSS p=0.1000)
 
 </details>
 
 ---
 
-## 3. Анализ ACF/PACF и определение сезонности
+## 3. ACF/PACF Analysis and Seasonality Identification
 
-### Исходный ряд (d=0)
-- ACF: медленно убывающая → нестационарность
-- PACF: значимый пик только на лаге 1
+### Original Series (d=0)
+- ACF: slowly decaying → non-stationarity
+- PACF: significant peak only at lag 1
 
-### Дифференцированный ряд (d=2)
-- ACF: значимые лаги 1, 11, 12, 13, 23, 24...
-- PACF: значимые лаги 1, 2, 3, 4, 11
+### Differenced Series (d=2)
+- ACF: significant lags 1, 11, 12, 13, 23, 24...
+- PACF: significant lags 1, 2, 3, 4, 11
 
-**Вывод:** Наличие значимых лагов 11, 13, 12, 23, 24 в ACF указывает на **годовую сезонность (s=12)**. Квартальная сезонность (s=4) не подтверждается.
+**Conclusion:** The presence of significant lags 11, 12, 13, 23, 24 in ACF indicates **annual seasonality (s=12)**. Quarterly seasonality (s=4) is not confirmed.
 
 <details>
-<summary><b>📈 График: ACF и PACF анализ</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: ACF and PACF Analysis</b> (click to expand)</summary>
 
 ![ACF/PACF Analysis](outputs/v2/05_acf_pacf_analysis.png)
 
-**Как читать графики:**
-- Затененная область — 95% доверительный интервал (±1.96/√n)
-- Красные пунктирные линии — границы значимости
-- Столбец, выходящий за область → автокорреляция значима (p < 0.05)
-- Лаг 0 всегда равен 1 (ряд с самим собой) — не учитываем
-- Лаг 1 — это первый столбец после лага 0
+**How to read the charts:**
+- Shaded area — 95% confidence interval (±1.96/√n)
+- Red dashed lines — significance boundaries
+- Bar exceeding the area → autocorrelation is significant (p < 0.05)
+- Lag 0 is always 1 (series with itself) — ignore it
+- Lag 1 is the first bar after lag 0
 
-**Наблюдения:**
-- Исходный ряд (верх): медленно убывающая ACF подтверждает нестационарность
-- Дифференцированный ряд (низ): значимые пики на лагах 11, 12, 13, 23, 24 → годовая сезонность (s=12)
+**Observations:**
+- Original series (top): slowly decaying ACF confirms non-stationarity
+- Differenced series (bottom): significant peaks at lags 11, 12, 13, 23, 24 → annual seasonality (s=12)
 
 </details>
 
 ---
 
-## 4. Подбор параметров SARIMA
+## 4. SARIMA Parameter Selection
 
 ### Grid Search
 
-**Что такое Grid Search:** Автоматический перебор всех комбинаций параметров (p, d, q)(P, D, Q, s) для поиска оптимальной модели.
+**What is Grid Search:** Automatic search through all parameter combinations (p, d, q)(P, D, Q, s) to find the optimal model.
 
-| Параметр | Диапазон | Описание |
+| Parameter | Range | Description |
 |----------|----------|----------|
-| p (AR) | 0-3 | Порядок авторегрессии |
-| d (дифференцирование) | 2 | Определен ранее |
-| q (MA) | 0-3 | Порядок скользящего среднего |
-| P (сезонный AR) | 0-1 | Сезонная авторегрессия |
-| D (сезонное дифф.) | 0-1 | Сезонное дифференцирование |
-| Q (сезонный MA) | 0-1 | Сезонное скользящее среднее |
-| s (сезонность) | 12 | Годовая сезонность (из ACF/PACF) |
+| p (AR) | 0-3 | Autoregressive order |
+| d (differencing) | 2 | Determined earlier |
+| q (MA) | 0-3 | Moving average order |
+| P (seasonal AR) | 0-1 | Seasonal autoregression |
+| D (seasonal diff.) | 0-1 | Seasonal differencing |
+| Q (seasonal MA) | 0-1 | Seasonal moving average |
+| s (seasonality) | 12 | Annual seasonality (from ACF/PACF) |
 
-**Всего комбинаций:** 128
+**Total combinations:** 128
 
-### Критерий отбора
+### Selection Criteria
 
-**Основной критерий:** Модель должна иметь **некоррелированные остатки** (Ljung-Box p > 0.05). Это гарантирует, что модель адекватно описывает временную структуру.
+**Primary criterion:** The model must have **uncorrelated residuals** (Ljung-Box p > 0.05). This ensures the model adequately describes the temporal structure.
 
-**Второй критерий:** Среди моделей с некоррелированными остатками выбираем с минимальным AIC.
+**Secondary criterion:** Among models with uncorrelated residuals, select the one with the minimum AIC.
 
-Из 128 моделей только **2 модели** дали некоррелированные остатки:
+Out of 128 models, only **2 models** produced uncorrelated residuals:
 
-| Модель | AIC | R²_test | LB p | Остатки |
+| Model | AIC | R²_test | LB p | Residuals |
 |--------|-----|---------|------|---------|
-| **SARIMA(3,2,3)×(0,0,1,12)** | **1792.86** | **-0.7795** | **0.1245** | ✅ Некоррелированы |
-| SARIMA(3,2,2)×(0,0,1,12) | 1805.81 | -0.8911 | 0.0797 | ✅ Некоррелированы |
+| **SARIMA(3,2,3)×(0,0,1,12)** | **1792.86** | **-0.7795** | **0.1245** | ✅ Uncorrelated |
+| SARIMA(3,2,2)×(0,0,1,12) | 1805.81 | -0.8911 | 0.0797 | ✅ Uncorrelated |
 
-**Выбрана:** SARIMA(3,2,3)×(0,0,1,12) — минимальный AIC среди моделей с некоррелированными остатками.
+**Selected:** SARIMA(3,2,3)×(0,0,1,12) — minimum AIC among models with uncorrelated residuals.
 
 ---
 
-## 5. Диагностика SARIMA
+## 5. SARIMA Diagnostics
 
-### Ljung-Box тест
+### Ljung-Box Test
 
-| Лаг | Статистика | p-value | Вывод |
+| Lag | Statistic | p-value | Conclusion |
 |-----|-----------|---------|-------|
-| 4 | 7.2242 | 0.1245 | ✅ Нет автокорреляции |
-| 8 | 7.2614 | 0.5087 | ✅ Нет автокорреляции |
-| 12 | 7.4079 | 0.8295 | ✅ Нет автокорреляции |
+| 4 | 7.2242 | 0.1245 | ✅ No autocorrelation |
+| 8 | 7.2614 | 0.5087 | ✅ No autocorrelation |
+| 12 | 7.4079 | 0.8295 | ✅ No autocorrelation |
 
-**Вывод:** ✅ Автокорреляция полностью устранена. Модель статистически адекватна.
+**Conclusion:** ✅ Autocorrelation is completely eliminated. The model is statistically adequate.
 
-### Качество прогноза
+### Forecast Quality
 
-| Выборка | R² | RMSE |
+| Sample | R² | RMSE |
 |---------|-----|------|
-| Обучающая (n=134) | 0.9645 | 1750.60 |
-| Тестовая (n=12) | -0.7795 | 3141.14 |
+| Training (n=134) | 0.9645 | 1750.60 |
+| Test (n=12) | -0.7795 | 3141.14 |
 
-**Проблема:** Высокое R²_train, но отрицательное R²_test. Модель хорошо подгоняет историю, но плохо прогнозирует будущее.
+**Problem:** High R²_train but negative R²_test. The model fits history well but forecasts poorly.
 
 <details>
-<summary><b>📈 График: Диагностика SARIMA</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: SARIMA Diagnostics</b> (click to expand)</summary>
 
 ![SARIMA Diagnostics](outputs/v2/05_sarima_diagnostics.png)
 
-**Наблюдения:**
-- Остатки колеблются вокруг нуля без явных паттернов
-- Гистограмма: сильный пик около нуля, отсутствует колоколообразное снижение частот — распределение не похоже на нормальное
-- Тест Jarque-Bera: JB = 276.79, p = 0.0000 → гипотеза нормальности отклонена
-- Коэффициенты асимметрии (Skew = 1.93) и эксцесса (Kurtosis = 9.51) существенно отклоняются от нуля
-- Q-Q plot: точки не следуют прямой линии — наблюдается систематическое отклонение; слева 4 точки сильного отклонения, справа одна экстремальная
-- ACF остатков: нет значимых пиков → автокорреляция устранена
+**Observations:**
+- Residuals fluctuate around zero without clear patterns
+- Histogram: strong peak near zero, no bell-shaped frequency decline — distribution does not resemble normal
+- Jarque-Bera test: JB = 276.79, p = 0.0000 → normality hypothesis rejected
+- Skewness (1.93) and Kurtosis (9.51) significantly deviate from zero
+- Q-Q plot: points do not follow the straight line — systematic deviation observed; 4 strong deviation points on the left, one extreme on the right
+- ACF of residuals: no significant peaks → autocorrelation eliminated
 
-**Вывод:** автокорреляция отсутствует, но нормального распределения нет.
+**Conclusion:** autocorrelation is absent, but the distribution is not normal.
 
 </details>
 
 ---
 
-## 6. SARIMAX с экзогенными переменными
+## 6. SARIMAX with Exogenous Variables
 
-### Методологическое замечание
+### Methodological Note
 
-**Избыточность набора переменных:** Первоначально использовался полный набор из 48 экзогенных переменных (9 базовых + 27 лагов + 11 сезонных + post_2022). Это **методологически избыточно**, так как:
-- Соотношение признаков к наблюдениям: 48/128 = 1:2.7 — гарантированное переобучение
-- Мультиколлинеарность: лаги сильно коррелируют между собой
-- Сезонные переменные частично дублируют сезонную компоненту SARIMA (s=12)
+**Redundancy of the variable set:** Initially, a full set of 48 exogenous variables was used (9 base + 27 lags + 11 seasonal + post_2022). This is **methodologically redundant** because:
+- Feature-to-observation ratio: 48/128 = 1:2.7 — guaranteed overfitting
+- Multicollinearity: lags are strongly correlated with each other
+- Seasonal variables partially duplicate the SARIMA seasonal component (s=12)
 
-**Правильный подход:** Начинать с минимального набора (4-5 ключевых переменных из SHAP-анализа) и постепенно усложнять при необходимости. Пункт 8 (9 ключевых переменных) — шаг в правильном направлении, но всё ещё избыточный.
+**Correct approach:** Start with a minimal set (4-5 key variables from SHAP analysis) and gradually increase complexity if needed. Section 8 (9 key variables) is a step in the right direction, but still redundant.
 
-### Конфигурация
+### Configuration
 
-- 48 экзогенных переменных (базовые + лаги + сезонные + post_2022)
-- Порядок: SARIMA(3,2,3)×(0,0,1,12)
+- 48 exogenous variables (base + lags + seasonal + post_2022)
+- Order: SARIMA(3,2,3)×(0,0,1,12)
 
-### Результаты
+### Results
 
-| Выборка | R² | RMSE | Ljung-Box p |
+| Sample | R² | RMSE | Ljung-Box p |
 |---------|-----|------|-------------|
-| Обучающая (n=128) | 0.9735 | 1471.90 | — |
-| Тестовая (n=12) | -9.6049 | 7668.14 | 0.0000 |
+| Training (n=128) | 0.9735 | 1471.90 | — |
+| Test (n=12) | -9.6049 | 7668.14 | 0.0000 |
 
-**Проблемы:**
-1. КРИТИЧЕСКОЕ переобучение (R²_test = -9.6)
-2. Остатки автокоррелированы (LB p = 0.0000)
-3. Прогнозы сильно завышены: среднее +11.0% к факту
+**Problems:**
+1. CRITICAL overfitting (R²_test = -9.6)
+2. Autocorrelated residuals (LB p = 0.0000)
+3. Significantly overestimated forecasts: mean +11.0% vs actual
 
-**Причина:** 48 экзогенных переменных слишком много для n=128. Мультиколлинеарность и переобучение.
+**Reason:** 48 exogenous variables are too many for n=128. Multicollinearity and overfitting.
 
 <details>
-<summary><b>📈 График: SARIMA vs SARIMAX</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: SARIMA vs SARIMAX</b> (click to expand)</summary>
 
 ![SARIMA vs SARIMAX](outputs/v2/05_sarimax_comparison.png)
 
-**Визуальный анализ:**
-- Доверительный интервал SARIMA покрывает только часть фактических точек, но идет близко от них
-- SARIMAX прогнозные точки значительно выше SARIMA и реальных данных
-- SARIMAX дает очень завышенные прогнозы
+**Visual analysis:**
+- SARIMA confidence interval covers only part of the actual points but stays close to them
+- SARIMAX forecast points are significantly higher than SARIMA and actual data
+- SARIMAX produces highly overestimated forecasts
 
 </details>
 
 ---
 
-## 7. Комбинированная модель: Полная Ridge + SARIMA
+## 7. Combined Model: Full Ridge + SARIMA
 
-### Метод
+### Method
 
-1. Полная Ridge (38 признаков из блока 4) прогнозирует уровень DEPOS
-2. SARIMA моделирует остатки Ridge
-3. Итоговый прогноз = Ridge + SARIMA(остатки)
+1. Full Ridge (38 features from Block 4) forecasts DEPOS level
+2. SARIMA models the Ridge residuals
+3. Final forecast = Ridge + SARIMA(residuals)
 
-### Результаты
+### Results
 
-| Модель | R²_test | RMSE_test | MAE_test | LB p |
+| Model | R²_test | RMSE_test | MAE_test | LB p |
 |--------|---------|-----------|----------|------|
-| **Полная Ridge (38 признаков)** | **0.9422** | **566.09** | **489.89** | 0.0037 ❌ |
-| Комбинированная (Ridge + SARIMA) | 0.9380 | 586.22 | 521.86 | **0.2982** ✅ |
+| **Full Ridge (38 features)** | **0.9422** | **566.09** | **489.89** | 0.0037 ❌ |
+| Combined (Ridge + SARIMA) | 0.9380 | 586.22 | 521.86 | **0.2982** ✅ |
 
-**Средние значения (тест):**
-- Фактические: 61,015 млрд руб.
-- Полная Ridge: 60,734 млрд руб. (-0.5%)
-- Комбинированная: 60,770 млрд руб. (-0.4%)
+**Mean values (test):**
+- Actual: 61,015 billion RUB
+- Full Ridge: 60,734 billion RUB (-0.5%)
+- Combined: 60,770 billion RUB (-0.4%)
 
-**Анализ:**
-- R²_test различается незначительно: 0.9422 vs 0.9380 (Δ = 0.0042)
-- RMSE различается на 20 млрд руб. (3.5%)
-- MAE различается на 32 млрд руб. (6.5%)
+**Analysis:**
+- R²_test differs slightly: 0.9422 vs 0.9380 (Δ = 0.0042)
+- RMSE differs by 20 billion RUB (3.5%)
+- MAE differs by 32 billion RUB (6.5%)
 
-**Ключевое преимущество комбинированной модели:**
-- **Устраняет автокорреляцию остатков** (LB p = 0.2982 против 0.0037)
-- Это делает её **предпочтительнее для прогнозирования с доверительными интервалами**
-- Остатки удовлетворяют предположению о независимости
+**Key advantage of the combined model:**
+- **Eliminates residual autocorrelation** (LB p = 0.2982 vs 0.0037)
+- Makes it **preferable for forecasting with confidence intervals**
+- Residuals satisfy the independence assumption
 
-**Рекомендация:** Для точечных прогнозов разница несущественна, но для интервальных прогнозов комбинированная модель предпочтительнее.
+**Recommendation:** For point forecasts, the difference is negligible, but for interval forecasts, the combined model is preferable.
 
 <details>
-<summary><b>📈 График: Ridge vs Комбинированная модель</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: Ridge vs Combined Model</b> (click to expand)</summary>
 
 ![Ridge vs Combined](outputs/v2/05_combined_model_comparison.png)
 
-**Визуальный анализ:**
-- Прогнозы Комбинированной модели и Ridge практически совпадают
-- Отклонения между ними почти невизуализируются на графике
-- Относительно реальных данных обе модели очень близки
+**Visual analysis:**
+- Combined model and Ridge forecasts are practically identical
+- Deviations between them are almost invisible on the chart
+- Both models are very close to actual data
 
 </details>
 
 ---
 
-## 8. SARIMAX с ключевыми переменными
+## 8. SARIMAX with Key Variables
 
-### Конфигурация
+### Configuration
 
-Сокращенный набор из 9 экзогенных переменных для борьбы с переобучением:
-- WAGE, CPI, UNEM, DEP1 (базовые)
-- Лаги 1 месяца для каждой
-- post_2022 (структурный сдвиг)
+Reduced set of 9 exogenous variables to combat overfitting:
+- WAGE, CPI, UNEM, DEP1 (base)
+- 1-month lags for each
+- post_2022 (structural shift)
 
-### Результаты
+### Results
 
-| Выборка | R² | RMSE | Ljung-Box p |
+| Sample | R² | RMSE | Ljung-Box p |
 |---------|-----|------|-------------|
-| Обучающая (n=133) | 0.8539 | 3537.01 | — |
-| Тестовая (n=12) | -6.4859 | 6442.57 | 0.0012 |
+| Training (n=133) | 0.8539 | 3537.01 | — |
+| Test (n=12) | -6.4859 | 6442.57 | 0.0012 |
 
-**Проблемы:**
-1. Все еще критическое переобучение (R²_test = -6.5)
-2. Остатки автокоррелированы (LB p = 0.0012)
-3. Прогнозы завышены
+**Problems:**
+1. Still critical overfitting (R²_test = -6.5)
+2. Autocorrelated residuals (LB p = 0.0012)
+3. Overestimated forecasts
 
-**Вывод:** Сокращение переменных с 48 до 9 НЕ решило проблему переобучения. SARIMAX не подходит для данного набора данных (n=133). Для дальнейшего исследования рекомендуется попробовать 4-5 ключевых переменных без лагов.
+**Conclusion:** Reducing variables from 48 to 9 did NOT solve the overfitting problem. SARIMAX is not suitable for this dataset (n=133). For further research, try 4-5 key variables without lags.
 
 <details>
-<summary><b>📈 График: SARIMAX с ключевыми переменными</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: SARIMAX with Key Variables</b> (click to expand)</summary>
 
 ![SARIMAX Key Comparison](outputs/v2/05_sarimax_key_comparison.png)
 
-**Визуальный анализ:**
-- SARIMAX (9 ключевых) также дает завышенные прогнозы
-- Сокращение переменных не решило проблему переобучения
-- Прогнозные точки значительно выше фактических
+**Visual analysis:**
+- SARIMAX (9 key) also produces overestimated forecasts
+- Reducing variables did not solve the overfitting problem
+- Forecast points are significantly higher than actual
 
 </details>
 
 ---
 
-## 9. Итоговое сравнение всех моделей
+## 9. Final Comparison of All Models
 
-| Модель | R²_test | RMSE_test | MAE_test | LB p | Статус |
+| Model | R²_test | RMSE_test | MAE_test | LB p | Status |
 |--------|---------|-----------|----------|------|--------|
-| SARIMA(3,2,3)×(0,0,1,12) | -0.7795 | 3141.14 | 2789.94 | 0.1245 | ✅ Остатки некоррелированы |
-| SARIMAX (48 экзогенных) | -9.6049 | 7668.14 | 6727.68 | 0.0000 | ❌ КРИТИЧЕСКОЕ переобучение |
-| SARIMAX (9 ключевых) | -6.4859 | 6442.57 | 5703.11 | 0.0012 | ❌ Переобучение осталось |
-| **Полная Ridge (38 признаков, блок 4)** | **0.9422** | **566.09** | **489.89** | 0.0037 | ✅ **Лучший точечный прогноз** |
-| **Комбинированная (Ridge + SARIMA)** | **0.9380** | **586.22** | **521.86** | **0.2982** | ✅ **Лучший интервальный прогноз** |
+| SARIMA(3,2,3)×(0,0,1,12) | -0.7795 | 3141.14 | 2789.94 | 0.1245 | ✅ Uncorrelated residuals |
+| SARIMAX (48 exogenous) | -9.6049 | 7668.14 | 6727.68 | 0.0000 | ❌ CRITICAL overfitting |
+| SARIMAX (9 key) | -6.4859 | 6442.57 | 5703.11 | 0.0012 | ❌ Overfitting remains |
+| **Full Ridge (38 features, Block 4)** | **0.9422** | **566.09** | **489.89** | 0.0037 | ✅ **Best point forecast** |
+| **Combined (Ridge + SARIMA)** | **0.9380** | **586.22** | **521.86** | **0.2982** | ✅ **Best interval forecast** |
 
-**Примечание:** 
-- Полная Ridge дает лучшие точечные метрики (R²_test = 0.9422)
-- Комбинированная модель устраняет автокорреляцию остатков (LB p = 0.2982)
-- Разница в качестве незначительна (ΔR² = 0.0042, ΔRMSE = 20 млрд руб.)
+**Note:** 
+- Full Ridge provides the best point metrics (R²_test = 0.9422)
+- Combined model eliminates residual autocorrelation (LB p = 0.2982)
+- Quality difference is negligible (ΔR² = 0.0042, ΔRMSE = 20 billion RUB)
 
 ---
 
-## 10. Итоговые выводы
+## 10. Final Conclusions
 
-### Ключевые достижения
+### Key Achievements
 
-1. **SARIMA решила проблему автокорреляции** — Ljung-Box p > 0.05 (главная цель блока достигнута)
-2. **Определена годовая сезонность** (s=12), а не квартальная (s=4)
-3. **Установлено, что d=2** — ряд требует двукратного дифференцирования
-4. **Комбинированная модель устранила автокорреляцию остатков Ridge** — LB p = 0.2982
+1. **SARIMA solved the autocorrelation problem** — Ljung-Box p > 0.05 (main goal achieved)
+2. **Annual seasonality identified** (s=12), not quarterly (s=4)
+3. **Established that d=2** — the series requires second-order differencing
+4. **Combined model eliminated Ridge residual autocorrelation** — LB p = 0.2982
 
-### Ограничения
+### Limitations
 
-1. **SARIMA не может прогнозировать** (R²_test < 0) — чисто временная модель не улавливает структурный сдвиг 2022-2023
-2. **SARIMAX (48) переобучается критически** — избыток переменных
-3. **SARIMAX (9) все еще переобучена** — сокращение не помогло
-4. **Комбинированная модель незначительно уступает Ridge по точечным метрикам** — ΔRMSE = 20 млрд руб.
+1. **SARIMA cannot forecast** (R²_test < 0) — pure time series model does not capture the 2022-2023 structural shift
+2. **SARIMAX (48) critically overfits** — excess variables
+3. **SARIMAX (9) still overfitted** — reduction did not help
+4. **Combined model slightly underperforms Ridge on point metrics** — ΔRMSE = 20 billion RUB
 
-### Почему SARIMAX не работает
+### Why SARIMAX Does Not Work
 
-- Даже 9 ключевых переменных вызывают переобучение при n=133
-- Экзогенные переменные в SARIMAX требуют большого объема данных
-- Структурный сдвиг 2022-2023 не улавливается временными моделями
-- Ridge лучше обрабатывает мультиколлинеарность через регуляризацию
+- Even 9 key variables cause overfitting with n=133
+- Exogenous variables in SARIMAX require larger data volumes
+- Structural shift 2022-2023 is not captured by time series models
+- Ridge handles multicollinearity better through regularization
 
-### Рекомендации
+### Recommendations
 
-| Задача | Модель | Обоснование |
+| Task | Model | Justification |
 |--------|--------|-------------|
-| **Точечный прогноз** | Полная Ridge (38 признаков, блок 4) | R²_test = 0.9422 — лучший результат |
-| **Интервальный прогноз** | Комбинированная (Ridge + SARIMA) | Остатки некоррелированы (LB p = 0.2982) |
-| **Понимание временной структуры** | SARIMA(3,2,3)×(0,0,1,12) | Остатки некоррелированы, модель адекватна |
-| **SARIMAX с экзогенными** | ❌ Не рекомендуется | Переобучение при любом наборе переменных |
+| **Point forecast** | Full Ridge (38 features, Block 4) | R²_test = 0.9422 — best result |
+| **Interval forecast** | Combined (Ridge + SARIMA) | Uncorrelated residuals (LB p = 0.2982) |
+| **Understanding time structure** | SARIMA(3,2,3)×(0,0,1,12) | Uncorrelated residuals, model adequate |
+| **SARIMAX with exogenous** | ❌ Not recommended | Overfitting with any variable set |
 
-### Итоговое решение
+### Final Decision
 
-- **Для точечного прогнозирования:** БЛОК 4 (Полная Ridge) — R²_test = 0.9422
-- **Для интервального прогнозирования:** Комбинированная модель — остатки некоррелированы
-- **БЛОК 5 (SARIMA)** — диагностический инструмент для анализа временной структуры
-- **SARIMAX отклонен** как неподходящий для малых выборок (n < 200)
+- **For point forecasting:** BLOCK 4 (Full Ridge) — R²_test = 0.9422
+- **For interval forecasting:** Combined model — uncorrelated residuals
+- **BLOCK 5 (SARIMA)** — diagnostic tool for time structure analysis
+- **SARIMAX rejected** as unsuitable for small samples (n < 200)
 
-### Визуальные наблюдения
+### Visual Observations
 
-1. Доверительный интервал SARIMA покрывает только часть фактических точек
-2. SARIMAX (48) и SARIMAX (9) дают завышенные прогнозы
-3. Полная Ridge и Комбинированная модель практически совпадают с фактом
+1. SARIMA confidence interval covers only part of the actual points
+2. SARIMAX (48) and SARIMAX (9) produce overestimated forecasts
+3. Full Ridge and Combined model practically coincide with actual data
 
 ---
 
-*Документ обновлен: 22.08.2026*
+*Document updated: 22.08.2026*
