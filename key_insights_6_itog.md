@@ -1,222 +1,223 @@
-# 📊 Итоговый прогноз: Объем вкладов населения РФ на 2026–2027 годы
+# 📊 Final Forecast: Household Deposits in Russia for 2026–2027
 
-**Проект:** Часть 6 — финальный прогноз  
-**Автор:** Надежда Силкина  
-**Дата:** 22.08.2026  
-
----
-
-## 📌 Содержание
-
-1. [Методология](#1-методология)
-2. [Проблема переобучения](#2-проблема-переобучения-модели-на-всю-выборку)
-3. [Сценарии макрофакторов](#3-сценарии-макрофакторов)
-4. [Результаты прогноза](#4-результаты-прогноза)
-5. [Визуализация](#5-визуализация)
-6. [Ограничения](#6-ограничения)
-7. [Рекомендации](#7-рекомендации)
+**Project:** Part 6 — final forecast  
+**Author:** Nadezhda Silkina  
+**Date:** 22.08.2026  
 
 ---
 
-## 📌 Введение
+## 📌 Table of Contents
 
-Этот документ подводит итог проекта по прогнозированию объема вкладов населения РФ.  
-Финальный прогноз построен на основе **полной Ridge-модели (все 38 признаков из блока 4)** — лучшей модели по итогам сравнения.
+1. [Methodology](#1-methodology)
+2. [The Overfitting Problem](#2-the-overfitting-problem-of-training-on-the-full-sample)
+3. [Macro Factor Scenarios](#3-macro-factor-scenarios)
+4. [Forecast Results](#4-forecast-results)
+5. [Visualization](#5-visualization)
+6. [Limitations](#6-limitations)
+7. [Recommendations](#7-recommendations)
 
-**Цель:** Спрогнозировать объем вкладов на 12 месяцев (март 2026 — февраль 2027) с учетом трех сценариев развития макроэкономической ситуации.
 ---
 
-## 1. Методология
+## 📌 Introduction
 
-### 📊 Используемая модель
+This document summarizes the project on forecasting household deposits in Russia.  
+The final forecast is based on the **full Ridge model (all 38 features from Block 4)** — the best model according to the comparison results.
 
-| Параметр | Значение |
+**Objective:** Forecast deposit volume for 12 months (March 2026 — February 2027) considering three scenarios of macroeconomic development.
+
+---
+
+## 1. Methodology
+
+### 📊 Model Used
+
+| Parameter | Value |
 |----------|----------|
-| Модель | **Полная Ridge-регрессия (все признаки)** |
-| Признаков | **38** |
-| Обучающая выборка (блок 4) | 122 наблюдения (янв 2015 — фев 2025) |
-| Проверенное качество (блок 4) | R²_test = 0.9422 |
-| Финальная обучающая выборка | 134 наблюдения (янв 2015 — фев 2026) |
-| R²_train (финальная) | **0.9991** |
-| RMSE_train | **353.85** млрд руб. |
-| MAE_train | **270.76** млрд руб. |
+| Model | **Full Ridge regression (all features)** |
+| Features | **38** |
+| Training sample (Block 4) | 122 observations (Jan 2015 — Feb 2025) |
+| Validated quality (Block 4) | R²_test = 0.9422 |
+| Final training sample | 134 observations (Jan 2015 — Feb 2026) |
+| R²_train (final) | **0.9991** |
+| RMSE_train | **353.85** billion RUB |
+| MAE_train | **270.76** billion RUB |
 
-### 🔧 Процесс прогнозирования
+### 🔧 Forecasting Process
 
-1. Модель обучается на всех доступных данных (134 наблюдения)
-2. Для прогноза на каждый месяц создаются признаки:
-   - Макрофакторы (WAGE, CPI, UNEM...) — по сценариям
-   - Лаги DEPOS — обновляются итеративно (каждый прогноз использует предыдущий)
-   - Сезонные фиктивные переменные — по месяцу
-3. Прогноз строится на 12 шагов вперед
+1. Model is trained on all available data (134 observations)
+2. For each month's forecast, features are created:
+   - Macro factors (WAGE, CPI, UNEM...) — according to scenarios
+   - DEPOS lags — updated iteratively (each forecast uses the previous one)
+   - Seasonal dummy variables — by month
+3. Forecast is built 12 steps ahead
 
 ---
 
-## 2. Проблема переобучения модели на всю выборку
+## 2. The Overfitting Problem of Training on the Full Sample
 
-### 🔍 Ключевая дилемма
+### 🔍 Key Dilemma
 
-| Подход | Преимущества | Недостатки |
+| Approach | Advantages | Disadvantages |
 |--------|-------------|------------|
-| **Модель на 122 набл.** (проверенная) | Есть независимая оценка качества (R²_test = 0.9422) | Не знает о росте DEPOS в 2025-2026 → прогнозы сильно занижены |
-| **Модель на 134 набл.** (финальная) | Учитывает актуальный уровень DEPOS → реалистичные прогнозы | Нет независимой проверки качества |
+| **Model on 122 obs.** (validated) | Independent quality assessment (R²_test = 0.9422) | Does not know about DEPOS growth in 2025-2026 → forecasts are severely underestimated |
+| **Model on 134 obs.** (final) | Accounts for current DEPOS level → realistic forecasts | No independent quality check |
 
-### 📊 Сравнение прогнозов
+### 📊 Forecast Comparison
 
-**Модель на 122 наблюдениях** (обучена до февраля 2025):
-- Последний известный DEPOS: 56,937 млрд руб. (февраль 2025)
-- Прогноз на март 2026: 47,789 млрд руб.
-- Проблема: прогноз **на 17% ниже** фактического уровня февраля 2026 (64,794)
+**Model on 122 observations** (trained until February 2025):
+- Last known DEPOS: 56,937 billion RUB (February 2025)
+- Forecast for March 2026: 47,789 billion RUB
+- Problem: forecast **17% below** actual February 2026 level (64,794)
 
-**Модель на 134 наблюдениях** (обучена до февраля 2026):
-- Последний известный DEPOS: 64,794 млрд руб. (февраль 2026)
-- Прогноз на март 2026: 65,432 млрд руб.
-- Прогноз адекватен: рост с текущего уровня
+**Model on 134 observations** (trained until February 2026):
+- Last known DEPOS: 64,794 billion RUB (February 2026)
+- Forecast for March 2026: 65,432 billion RUB
+- Forecast is adequate: growth from current level
 
-### 📌 Вывод
+### 📌 Conclusion
 
-Переобучение на всю выборку **необходимо**, так как:
-1. В марте 2025 — феврале 2026 произошел существенный рост DEPOS (+13.8% за год)
-2. Модель без этих данных "не понимает" новый уровень и дает бессмысленные прогнозы
-3. Структура модели идентична проверенной (R²_test = 0.9422), поэтому можно ожидать сопоставимое качество
+Training on the full sample is **necessary** because:
+1. From March 2025 to February 2026, DEPOS grew significantly (+13.8% year-over-year)
+2. A model without this data "does not understand" the new level and produces meaningless forecasts
+3. The model structure is identical to the validated one (R²_test = 0.9422), so comparable quality can be expected
 
-**Компромисс:** Мы теряем независимую проверку, но получаем актуальный прогноз. Это стандартная практика в финальном прогнозировании.
+**Compromise:** We lose independent validation but gain an up-to-date forecast. This is standard practice in final forecasting.
 
 ---
 
-## 3. Сценарии макрофакторов
+## 3. Macro Factor Scenarios
 
-Для прогноза созданы три сценария развития макроэкономической ситуации.
+Three scenarios of macroeconomic development were created for the forecast.
 
-### 📊 Параметры сценариев
+### 📊 Scenario Parameters
 
-| Параметр | Базовый | Оптимистичный | Пессимистичный |
+| Parameter | Baseline | Optimistic | Pessimistic |
 |----------|---------|---------------|----------------|
-| **WAGE** (рост/мес) | +0.7% | +1.0% | +0.4% |
-| **CPI** (изменение, п.п.) | -0.02 | -0.05 | +0.05 |
-| **UNEM** (изменение) | +1.0% | -2.0% | +5.0% |
-| **DEP1** (изменение) | -2.0% | -5.0% | +5.0% |
+| **WAGE** (growth/month) | +0.7% | +1.0% | +0.4% |
+| **CPI** (change, p.p.) | -0.02 | -0.05 | +0.05 |
+| **UNEM** (change) | +1.0% | -2.0% | +5.0% |
+| **DEP1** (change) | -2.0% | -5.0% | +5.0% |
 
-### Описание сценариев
+### Scenario Descriptions
 
-**Базовый (наиболее вероятный):**
-- Умеренный рост зарплат (+8.7% годовых)
-- Постепенное снижение инфляции
-- Небольшой рост безработицы
-- Стабильные депозитные ставки
+**Baseline (most likely):**
+- Moderate wage growth (+8.7% annually)
+- Gradual disinflation
+- Slight increase in unemployment
+- Stable deposit rates
 
-**Оптимистичный:**
-- Ускоренный рост зарплат (+12.7% годовых)
-- Быстрая дезинфляция
-- Снижение безработицы
-- Снижение ставок (стимулирует экономику)
+**Optimistic:**
+- Accelerated wage growth (+12.7% annually)
+- Rapid disinflation
+- Decreasing unemployment
+- Rate cuts (stimulating the economy)
 
-**Пессимистичный:**
-- Замедление роста зарплат (+4.9% годовых)
-- Рост инфляции
-- Рост безработицы
-- Повышение ставок (борьба с инфляцией)
+**Pessimistic:**
+- Slower wage growth (+4.9% annually)
+- Rising inflation
+- Increasing unemployment
+- Rate hikes (fighting inflation)
 
 ---
 
-## 4. Результаты прогноза
+## 4. Forecast Results
 
-### 📊 Помесячный прогноз (млрд руб.)
+### 📊 Monthly Forecast (billion RUB)
 
-| Месяц | Базовый | Оптимистичный | Пессимистичный | 95% ДИ (базовый) |
+| Month | Baseline | Optimistic | Pessimistic | 95% PI (baseline) |
 |-------|---------|---------------|----------------|-------------------|
-| Март 2026 | 65,766 | 65,702 | 65,937 | 65,070 — 66,462 |
-| Апрель 2026 | 65,192 | 65,165 | 65,332 | 64,496 — 65,888 |
-| Май 2026 | 65,760 | 65,782 | 65,853 | 65,064 — 66,456 |
-| Июнь 2026 | 66,007 | 66,085 | 66,059 | 65,311 — 66,703 |
-| Июль 2026 | 66,552 | 66,705 | 66,536 | 65,856 — 67,248 |
-| Август 2026 | 67,123 | 67,358 | 67,027 | 66,427 — 67,819 |
-| Сентябрь 2026 | 67,444 | 67,760 | 67,283 | 66,748 — 68,140 |
-| Октябрь 2026 | 67,958 | 68,374 | 67,707 | 67,262 — 68,654 |
-| Ноябрь 2026 | 67,941 | 68,465 | 67,587 | 67,245 — 68,637 |
-| Декабрь 2026 | 68,293 | 68,930 | 67,837 | 67,597 — 68,989 |
-| Январь 2027 | 69,084 | 69,843 | 68,513 | 68,387 — 69,780 |
-| **Февраль 2027** | **70,046** | **70,934** | **69,353** | **69,350 — 70,742** |
+| March 2026 | 65,766 | 65,702 | 65,937 | 65,070 — 66,462 |
+| April 2026 | 65,192 | 65,165 | 65,332 | 64,496 — 65,888 |
+| May 2026 | 65,760 | 65,782 | 65,853 | 65,064 — 66,456 |
+| June 2026 | 66,007 | 66,085 | 66,059 | 65,311 — 66,703 |
+| July 2026 | 66,552 | 66,705 | 66,536 | 65,856 — 67,248 |
+| August 2026 | 67,123 | 67,358 | 67,027 | 66,427 — 67,819 |
+| September 2026 | 67,444 | 67,760 | 67,283 | 66,748 — 68,140 |
+| October 2026 | 67,958 | 68,374 | 67,707 | 67,262 — 68,654 |
+| November 2026 | 67,941 | 68,465 | 67,587 | 67,245 — 68,637 |
+| December 2026 | 68,293 | 68,930 | 67,837 | 67,597 — 68,989 |
+| January 2027 | 69,084 | 69,843 | 68,513 | 68,387 — 69,780 |
+| **February 2027** | **70,046** | **70,934** | **69,353** | **69,350 — 70,742** |
 
-### 📊 Сводная статистика
+### 📊 Summary Statistics
 
-| Сценарий | Мин | Макс | Среднее | Февраль 2027 | Рост за 12 мес |
+| Scenario | Min | Max | Mean | February 2027 | 12-Month Growth |
 |----------|-----|------|---------|-------------|----------------|
-| **Базовый** | 65,192 | 70,046 | 67,264 | 70,046 | **+8.1%** |
-| **Оптимистичный** | 65,165 | 70,934 | 67,592 | 70,934 | **+9.5%** |
-| **Пессимистичный** | 65,332 | 69,353 | 67,085 | 69,353 | **+7.0%** |
+| **Baseline** | 65,192 | 70,046 | 67,264 | 70,046 | **+8.1%** |
+| **Optimistic** | 65,165 | 70,934 | 67,592 | 70,934 | **+9.5%** |
+| **Pessimistic** | 65,332 | 69,353 | 67,085 | 69,353 | **+7.0%** |
 
-**Текущий уровень (февраль 2026):** 64,794 млрд руб.
+**Current level (February 2026):** 64,794 billion RUB.
 
-### Сезонные особенности
+### Seasonal Patterns
 
-- **Апрель** — минимальное значение во всех сценариях (провал после мартовского пика)
-- **Декабрь-Январь** — рост (предновогодние выплаты, бонусы)
-- **Февраль** — максимальное значение (годовой пик)
+- **April** — minimum value across all scenarios (drop after March peak)
+- **December–January** — growth (pre-New Year payments, bonuses)
+- **February** — maximum value (annual peak)
 
 ---
 
-## 5. Визуализация
+## 5. Visualization
 
 <details>
-<summary><b>📈 График: Финальный прогноз с тремя сценариями</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: Final Forecast with Three Scenarios</b> (click to expand)</summary>
 
-![Финальный прогноз](outputs/v2/06_final_forecast_2026_2027.png)
+![Final Forecast](outputs/v2/06_final_forecast_2026_2027.png)
 
-**Наблюдения:**
-- Все три сценария показывают рост вкладов
-- Оптимистичный сценарий выше базового на всем горизонте
-- Пессимистичный сценарий ниже базового
-- Доверительный интервал расширяется к концу периода
-- Сезонные колебания сохраняются (апрельский провал, декабрьский рост)
+**Observations:**
+- All three scenarios show deposit growth
+- Optimistic scenario is above baseline across the entire horizon
+- Pessimistic scenario is below baseline
+- Confidence interval widens toward the end of the period
+- Seasonal fluctuations persist (April drop, December rise)
 
 </details>
 
 ---
 
-## 6. Ограничения
+## 6. Limitations
 
-### Методологические
+### Methodological
 
-| Ограничение | Описание | Влияние |
+| Limitation | Description | Impact |
 |-------------|----------|---------|
-| **Нет независимой проверки** | Модель обучена на всех 134 наблюдениях | Качество на новых данных неизвестно |
-| **Упрощенные сценарии** | Макрофакторы заданы линейными трендами | Не учитывают возможные шоки |
-| **Горизонт 12 мес** | Точность снижается с горизонтом | Последние месяцы менее надежны |
-| **Доверительный интервал** | ±696 млрд руб. (из обучающей выборки) | Может быть занижен на практике |
+| **No independent validation** | Model trained on all 134 observations | Quality on new data is unknown |
+| **Simplified scenarios** | Macro factors set as linear trends | Do not account for possible shocks |
+| **12-month horizon** | Accuracy decreases with horizon | Later months are less reliable |
+| **Prediction interval** | ±696 billion RUB (from training sample) | May be underestimated in practice |
 
-### Экономические
+### Economic Risks
 
-| Риск | Описание |
+| Risk | Description |
 |------|----------|
-| **Геополитические шоки** | Санкции, кризисы не учтены |
-| **Изменение ставок** | Резкие движения DEP1 могут изменить динамику |
-| **Инфляционные скачки** | Непредвиденный рост CPI |
-| **Структурные изменения** | Новые экономические режимы |
+| **Geopolitical shocks** | Sanctions, crises not accounted for |
+| **Rate changes** | Sharp DEP1 movements could alter dynamics |
+| **Inflation spikes** | Unexpected CPI growth |
+| **Structural changes** | New economic regimes |
 
 ---
 
-## 7. Рекомендации
+## 7. Recommendations
 
-### Для использования прогноза
+### For Using the Forecast
 
-1. **Основной сценарий:** Базовый (рост +8.1% за год)
-2. **Диапазон планирования:** 69,353 — 70,934 млрд руб. (пессимистичный — оптимистичный)
-3. **Мониторинг:** Отслеживать фактические WAGE, CPI, UNEM ежемесячно
-4. **Обновление:** Пересчитывать прогноз при поступлении новых данных
+1. **Main scenario:** Baseline (+8.1% annual growth)
+2. **Planning range:** 69,353 — 70,934 billion RUB (pessimistic — optimistic)
+3. **Monitoring:** Track actual WAGE, CPI, UNEM monthly
+4. **Update:** Recalculate forecast as new data becomes available
 
-### Для дальнейшего развития
+### For Further Development
 
-- [x] Базовая модель (Ridge, 13 признаков) — Блок 1
-- [x] Глубокий анализ временных рядов — Блок 2
-- [x] Интерпретация моделей (SHAP) — Блок 3
-- [x] Feature Engineering (38 признаков) — Блок 4
-- [x] Модели временных рядов (SARIMA) — Блок 5
-- [x] Финальный прогноз (3 сценария) — Блок 6
-- [ ] Обновление прогноза при новых данных
-- [ ] Создание дашборда для мониторинга
+- [x] Baseline model (Ridge, 13 features) — Block 1
+- [x] Deep time series analysis — Block 2
+- [x] Model interpretation (SHAP) — Block 3
+- [x] Feature Engineering (38 features) — Block 4
+- [x] Time series models (SARIMA) — Block 5
+- [x] Final forecast (3 scenarios) — Block 6
+- [ ] Update forecast with new data
+- [ ] Create monitoring dashboard
 
 ---
 
-*Документ создан: 22.08.2026*
-*Проект завершен: 6 блоков анализа и моделирования*
+*Document updated: 22.08.2026*
+*Project completed: 6 blocks of analysis and modeling*
