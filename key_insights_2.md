@@ -1,172 +1,172 @@
-# 📊 Углубленный анализ временных рядов: прогнозирование вкладов населения РФ
+# 📊 Deep Time Series Analysis: Forecasting Household Deposits in Russia
 
-**Проект:** Часть 2 — анализ временных рядов  
-**Автор:** Надежда Силкина  
-**Дата:** 22.08.2026  
-
----
-
-## 📌 Содержание
-
-1. [Декомпозиция временного ряда](#1-декомпозиция-временного-ряда)
-   - [Тренд](#-тренд)
-   - [Сезонность](#-сезонность)
-   - [Остатки (шум)](#-остатки-шум)
-2. [Структурные изменения](#2-структурные-изменения)
-   - [Тест Чоу на структурный разрыв](#-тест-чоу-chow-test-на-структурный-разрыв)
-   - [Сравнение трендов: до и после 2022 года](#-сравнение-трендов-до-и-после-2022-года)
-3. [Предварительные выводы для моделирования](#3-предварительные-выводы-для-моделирования)
-4. [Следующие шаги](#4-следующие-шаги)
+**Project:** Part 2 — time series analysis  
+**Author:** Nadezhda Silkina  
+**Date:** 22.08.2026  
 
 ---
 
-## 📌 Введение
+## 📌 Table of Contents
 
-Этот документ содержит результаты углубленного анализа временного ряда DEPOS (объем вкладов населения РФ). Анализ выполнен как продолжение первой части проекта (`01_EDA_Modeling_Deposits_Forecast.ipynb`).
-
-**Цели:**
-1. Декомпозировать ряд на тренд, сезонность и шум
-2. Выявить сезонные паттерны
-3. Обнаружить структурные изменения в динамике вкладов
-4. Подготовить рекомендации для улучшения модели
-
----
-
-## 1. Декомпозиция временного ряда
-
-### 📈 Тренд
-
-**Наблюдения:**
-- Ряд демонстрирует устойчивый восходящий тренд на протяжении всего периода наблюдений.
-- **Период 2014–2023:** тренд хорошо аппроксимируется линейной функцией.
-- **С декабря 2022 года:** четкое изменение угла наклона — темпы роста значительно ускорились.
-
-**Визуализация тренда:**
-![Тренд DEPOS](outputs/v2/02_depos_trend.png)
-
-**Вывод:** Тренд не является строго линейным на всем периоде. Наблюдается **структурный разрыв** в конце 2022 года, что подтверждается тестом Чоу (p < 0.05).
+1. [Time Series Decomposition](#1-time-series-decomposition)
+   - [Trend](#-trend)
+   - [Seasonality](#-seasonality)
+   - [Residuals (noise)](#-residuals-noise)
+2. [Structural Changes](#2-structural-changes)
+   - [Chow Test for Structural Break](#-chow-test-for-structural-break)
+   - [Trend Comparison: Before and After 2022](#-trend-comparison-before-and-after-2022)
+3. [Preliminary Modeling Conclusions](#3-preliminary-modeling-conclusions)
+4. [Next Steps](#4-next-steps)
 
 ---
 
-### 🌊 Сезонность
+## 📌 Introduction
 
-**Метод анализа:**
-- Использована аддитивная декомпозиция (`seasonal_decompose`, period=12)
-- Сезонная компонента выделена методом скользящего среднего
+This document presents the results of an in-depth analysis of the DEPOS time series (household deposits in Russia). The analysis builds on the first part of the project (`01_EDA_Modeling_Deposits_Forecast.ipynb`).
+
+**Objectives:**
+1. Decompose the series into trend, seasonality, and noise
+2. Identify seasonal patterns
+3. Detect structural changes in deposit dynamics
+4. Prepare recommendations for model improvement
+
+---
+
+## 1. Time Series Decomposition
+
+### 📈 Trend
+
+**Observations:**
+- The series shows a sustained upward trend throughout the observation period.
+- **2014–2023:** The trend is well approximated by a linear function.
+- **From December 2022 onward:** A clear change in slope — the growth rate accelerated significantly.
+
+**Trend Visualization:**
+![DEPOS Trend](outputs/v2/02_depos_trend.png)
+
+**Conclusion:** The trend is not strictly linear over the entire period. A **structural break** is observed at the end of 2022, confirmed by the Chow test (p < 0.05).
+
+---
+
+### 🌊 Seasonality
+
+**Methodology:**
+- Additive decomposition used (`seasonal_decompose`, period=12)
+- Seasonal component extracted via moving average
 
 <details>
-<summary><b>📋 Результаты (средние значения по месяцам)</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📋 Results (monthly averages)</b> (click to expand)</summary>
   
-| Месяц | Среднее значение (млрд руб.) | Сезонная компонента (млрд руб.) |
-|-------|-------------------------------|--------------------------------|
-| Январь | 33 866.2 | **+881.8** |
-| Февраль | 33 431.9 | **+159.6** |
-| Март | 31 123.2 | **+139.3** |
-| Апрель | 31 241.8 | −33.0 |
-| Май | 31 776.2 | **+192.6** |
-| Июнь | 31 839.5 | −61.8 |
-| Июль | 32 220.8 | −24.5 |
-| Август | 32 618.0 | +35.8 |
-| Сентябрь | 32 859.6 | −47.8 |
-| Октябрь | 32 923.3 | −304.3 |
-| Ноябрь | 33 049.4 | **−471.8** |
-| Декабрь | 33 431.5 | −466.1 |
+| Month | Mean value (billion RUB) | Seasonal component (billion RUB) |
+|-------|--------------------------|----------------------------------|
+| January | 33,866.2 | **+881.8** |
+| February | 33,431.9 | **+159.6** |
+| March | 31,123.2 | **+139.3** |
+| April | 31,241.8 | −33.0 |
+| May | 31,776.2 | **+192.6** |
+| June | 31,839.5 | −61.8 |
+| July | 32,220.8 | −24.5 |
+| August | 32,618.0 | +35.8 |
+| September | 32,859.6 | −47.8 |
+| October | 32,923.3 | −304.3 |
+| November | 33,049.4 | **−471.8** |
+| December | 33,431.5 | −466.1 |
 </details>
 
-**Визуализация сезонной компоненты:**
-![Сезонная компонента DEPOS по месяцам](outputs/v2/02_seasonal_component.png)
+**Seasonal Component Visualization:**
+![DEPOS Seasonal Component by Month](outputs/v2/02_seasonal_component.png)
 
-**Ключевые выводы:**
-- **Пик сезонности (по остаткам):** январь (+881.8 млрд руб.) — вероятно, связан с годовыми бонусами и переоформлением депозитов.
-- **Минимум сезонности (по остаткам):** ноябрь (−471.8 млрд руб.) — возможно, связано с сезонным снятием средств перед праздниками.
-- **Размах сезонных колебаний:** 1 353.6 млрд руб. (4.16% от среднего объема вкладов).
-- **Характер:** сезонность умеренная, но статистически значимая.
+**Key Findings:**
+- **Seasonality peak (by residuals):** January (+881.8 billion RUB) — likely linked to annual bonuses and deposit rollovers.
+- **Seasonality trough (by residuals):** November (−471.8 billion RUB) — possibly due to seasonal withdrawals before the holidays.
+- **Range of seasonal fluctuations:** 1,353.6 billion RUB (4.16% of average deposit volume).
+- **Nature:** Seasonality is moderate but statistically significant.
 
-**Вывод для моделирования:**
-- Сезонность присутствует и может быть учтена с помощью фиктивных переменных (dummies) по месяцам.
-- Наибольший вклад в сезонность дают январь (+881.8 млрд руб.) и ноябрь (−471.8 млрд руб.).
-- Учет сезонности может улучшить точность прогноза на 1–2% (✅ **подтверждено в Block 4:** месячные dummy дали улучшение R² до +0.0281).
+**Modeling Implication:**
+- Seasonality is present and can be captured using monthly dummy variables.
+- The largest seasonal contributions come from January (+881.8 billion RUB) and November (−471.8 billion RUB).
+- Accounting for seasonality can improve forecast accuracy by 1–2% (✅ **confirmed in Block 4:** monthly dummies improved R² by up to +0.0281).
 
 ---
 
-### 📉 Остатки (шум)
+### 📉 Residuals (noise)
 
 <details>
-<summary><b>📈 График: Декомпозиция временного ряда DEPOS</b> (нажмите, чтобы развернуть)</summary>
+<summary><b>📈 Chart: DEPOS Time Series Decomposition</b> (click to expand)</summary>
 
-![Декомпозиция DEPOS](outputs/v2/02_decomposition_additive.png)
+![DEPOS Decomposition](outputs/v2/02_decomposition_additive.png)
 
 </details>
 
-**Наблюдения:**
-- Остатки (нижняя панель) колеблются вокруг нуля, что говорит о корректности аддитивной модели.
-- Отсутствует долгосрочный тренд — остатки не имеют систематического смещения вверх или вниз.
-- Нет явных паттернов или цикличности, что указывает на случайный характер остатков.
-- Периоды 2015–2016 и 2022–2023 показывают более высокую волатильность, что может быть связано с макроэкономическими кризисами.
+**Observations:**
+- Residuals (bottom panel) fluctuate around zero, confirming the additive model is appropriate.
+- No long-term trend — residuals show no systematic upward or downward bias.
+- No clear patterns or cyclicality, indicating the residuals are random.
+- Periods 2015–2016 and 2022–2023 show higher volatility, likely linked to macroeconomic crises.
 
-**Вывод:** Остатки случайны, аддитивная модель подходит для данного ряда.
-
----
-
-## 2. Структурные изменения
-
-### 🔍 Тест Чоу (Chow Test) на структурный разрыв
-
-**Гипотезы:**
-- H₀: коэффициенты тренда одинаковы для всего периода
-- H₁: коэффициенты тренда различаются до и после 2022 года
-
-**Результаты:**
-- F-статистика: 782.04
-- p-значение: 0.0000 (< 0.05)
-
-**Вывод:** Структурный разрыв статистически значим (p < 0.05). Тренд изменился после 2022 года.
+**Conclusion:** Residuals are random; the additive model is suitable for this series.
 
 ---
 
-### 📊 Сравнение трендов: до и после 2022 года
+## 2. Structural Changes
 
-| Период | Угол наклона (млрд руб./месяц) | Изменение |
-|--------|--------------------------------|-----------|
-| До 2022 | 181.4 | — |
-| С 2022 | 730.5 | **+302.6%** |
+### 🔍 Chow Test for Structural Break
 
-**Визуализация структурного разрыва:**
-![Сравнение трендов до и после 2022](outputs/v2/02_structural_break_analysis.png)
+**Hypotheses:**
+- H₀: Trend coefficients are the same across the entire period
+- H₁: Trend coefficients differ before and after 2022
 
-**Визуальное наблюдение:**
-- До 2022 года рост был умеренным и стабильным.
-- С декабря 2022 года темпы роста ускорились более чем в 4 раза.
-- Это может быть связано с ростом ключевой ставки, ужесточением денежно-кредитной политики и переориентацией сбережений населения на депозиты.
+**Results:**
+- F-statistic: 782.04
+- p-value: 0.0000 (< 0.05)
 
-**Рекомендация:** Обязательно добавить **фиктивную переменную `post_2022`** (0 до 2022 года, 1 после) во все последующие модели.
-✅ **Реализовано в Block 4:** `post_2022` дала улучшение R² на +0.0427.
+**Conclusion:** The structural break is statistically significant (p < 0.05). The trend changed after 2022.
 
 ---
 
-## 3. Предварительные выводы для моделирования
+### 📊 Trend Comparison: Before and After 2022
 
-На основе анализа:
-1. Ряд имеет устойчивый восходящий тренд, который ускорился после 2022 года (подтверждено тестом Чоу).
-2. Сезонность присутствует: пик в январе, спад в ноябре. Размах ~1 353.6 млрд руб. (4.16% от среднего).
-3. Остатки случайны, аддитивная модель подходит.
+| Period | Slope (billion RUB/month) | Change |
+|--------|---------------------------|--------|
+| Before 2022 | 181.4 | — |
+| Since 2022 | 730.5 | **+302.6%** |
 
-**Рекомендуемые признаки для следующей модели:**
-- ✅ `post_2022` (фиктивная переменная) — **реализовано в Block 4** (+0.0427 R²)
-- ✅ `month_*` (фиктивные переменные для месяцев) — **реализовано в Block 4** (до +0.0281 R²)
+**Structural Break Visualization:**
+![Trend Comparison Before and After 2022](outputs/v2/02_structural_break_analysis.png)
 
----
+**Visual Observation:**
+- Before 2022, growth was moderate and stable.
+- From December 2022, growth accelerated more than fourfold.
+- This may be linked to rising key interest rates, tighter monetary policy, and a shift in household savings toward deposits.
 
-## 4. Следующие шаги
-
-- [x] Декомпозиция временного ряда
-- [x] Анализ сезонности (средние значения + сезонная компонента)
-- [x] Тест Чоу на структурный разрыв
-- [ ] SHAP-анализ и проверка нелинейностей → [Block 3](key_insights_3.md)
-- [ ] Добавление сезонных и структурных фиктивных переменных → [Block 4](key_insights_4.md)
-- [ ] Построение SARIMA-модели → [Block 5](key_insights_5.md)
-- [ ] Финальный прогноз на 2026-2027 → [Block 6](key_insights_6_itog.md)
+**Recommendation:** Add a **`post_2022` dummy variable** (0 before 2022, 1 after) to all subsequent models.
+✅ **Implemented in Block 4:** `post_2022` improved R² by +0.0427.
 
 ---
 
-*Документ обновлен: 22.08.2026*
+## 3. Preliminary Modeling Conclusions
+
+Based on the analysis:
+1. The series has a strong upward trend that accelerated after 2022 (confirmed by Chow test).
+2. Seasonality is present: peak in January, trough in November. Range ~1,353.6 billion RUB (4.16% of average).
+3. Residuals are random; the additive model is appropriate.
+
+**Recommended features for the next model:**
+- ✅ `post_2022` (dummy variable) — **implemented in Block 4** (+0.0427 R²)
+- ✅ `month_*` (monthly dummy variables) — **implemented in Block 4** (up to +0.0281 R²)
+
+---
+
+## 4. Next Steps
+
+- [x] Time series decomposition
+- [x] Seasonality analysis (averages + seasonal component)
+- [x] Chow test for structural break
+- [ ] SHAP analysis and nonlinearity testing → [Block 3](key_insights_3.md)
+- [ ] Add seasonal and structural dummy variables → [Block 4](key_insights_4.md)
+- [ ] Build SARIMA model → [Block 5](key_insights_5.md)
+- [ ] Final forecast for 2026-2027 → [Block 6](key_insights_6_itog.md)
+
+---
+
+*Document updated: 22.08.2026*
