@@ -5,6 +5,23 @@
 
 ---
 
+## 📌 Table of Contents
+
+1. [Project Overview](#-project-overview)
+2. [Business Problem](#-business-problem)
+3. [Dataset](#-dataset)
+4. [Models & Methodology](#-models--methodology)
+5. [Final Results & Key Insights](#-final-results--key-insights)
+6. [Key Takeaways](#-key-takeaways)
+7. [Visual Outputs](#-visual-outputs)
+8. [Project Structure](#-project-structure)
+9. [Output Files Description](#-output-files-description)
+10. [Technology Stack](#-technology-stack)
+11. [Future Work](#-future-work)
+12. [About the Author](#-about-the-author)
+
+---
+
 ### 📌 Project Overview
 
 This project is the culmination of a comprehensive data science pipeline aimed at forecasting the volume of household deposits in Russia. It showcases the application of classical econometric techniques and modern machine learning algorithms, moving from exploratory analysis to a final, actionable forecast.
@@ -140,6 +157,8 @@ deposits_forecast_project/
 ├── data/
 │ ├── raw_deposits_data_2014_2026.xlsx          # Original data (raw, before processing)
 │ └── processed_deposits_data.xlsx              # Cleaned and preprocessed data
+├── docs/
+│   └── presentation.pdf      # Project presentation (PDF)
 ├── notebooks/                   # 6 Analysis Blocks
 │ ├── 01_EDA_Modeling_Deposits_Forecast_En.ipynb
 │ ├── 01_EDA_Modeling_Deposits_Forecast_Ru.ipynb
@@ -248,6 +267,11 @@ deposits_forecast_project/
 - **Libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `statsmodels`, `shap`
 - **Environment:** Jupyter Notebook / Google Colab
 - **Platform:** GitHub (portfolio hosting)
+
+---
+
+### 🔮 Future Work
+- **Cointegration Analysis:** The current model is highly accurate for forecasting. As a next step, testing for cointegration between key variables (like `DEPOS`, `WAGE`, and `DEP1`) could provide deeper insights into long-term equilibrium relationships. This could pave the way for building Vector Error Correction Models (VECM) to further improve the economic interpretability of the forecast.
 
 ---
 
