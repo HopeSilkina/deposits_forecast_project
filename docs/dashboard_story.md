@@ -1,619 +1,319 @@
-# 📊 EDA & Baseline Models: Forecasting Household Deposits in Russia
+# 📊 Дашборд: Прогноз вкладов населения РФ (2014–2027)
 
-**Project:** Macroeconomic Modeling & Time Series Analysis  
-**Author:** Nadezhda Silkina  
-**Date:** 20 August 2026  
-
----
-
-## 📌 Table of Contents
-
-1. [Data Overview](#1-data-overview)
-2. [Correlation Analysis](#2-correlation-analysis)
-3. [Time Series Analysis](#3-time-series-analysis)
-4. [Scatter Plot Analysis](#4-scatter-plot-analysis)
-5. [Stationarity Analysis](#5-stationarity-analysis)
-6. [Multicollinearity Diagnostics](#6-multicollinearity-diagnostics)
-7. [Model Performance Comparison](#7-model-performance-comparison)
-8. [Ridge Regression Coefficients: What Drives Deposits?](#8-ridge-regression-coefficients-what-drives-household-deposits)
-9. [Hyperparameter Tuning: Ridge Alpha Selection](#9-hyperparameter-tuning-ridge-alpha-selection)
-10. [Executive Summary](#10-executive-summary)
+**Проект:** Макроэкономическое моделирование и анализ временных рядов  
+**Автор:** Надежда Силкина  
+**Дата:** 06 октября 2026  
+**Платформа:** AW BI (aw-demo.ru)  
+**Источник данных:** [deposits_forecast_project](https://github.com/HopeSilkina/deposits_forecast_project)  
+**Ссылка на дашборд:** [Deposits Forecast Dashboard](https://aw-demo.ru/public/dashboard/WItcHNMCUJ2zuHkoVYP36sQ8yhbTp1xP)
 
 ---
 
-## 1. Data Overview
+## 📌 Содержание
 
-**Timeframe:** January 2014 — February 2026 (146 monthly observations)  
-**Target Variable:** `DEPOS` — Volume of household deposits (billion RUB)  
-**Features:** 9 macroeconomic indicators + 4 lag features (1, 3, 6, 12 months) — *expanded to 38 features in Block 4*
-
-### 📊 Summary Statistics
-
-| Variable | Mean | Std Dev | Min | Max |
-|----------|------|---------|-----|-----|
-| DEPOS | 32,547 | 12,379 | 16,564 | 65,871 |
-| WAGE | 56,210 | 22,855 | 29,255 | 139,727 |
-| SERV | 975 | 337 | 553 | 1,833 |
-| DEP1 | 8.81 | 3.94 | 4.06 | 21.49 |
-| CRED1 | 20.79 | 5.02 | 13.04 | 32.73 |
-| CPI | 100.60 | 0.78 | 99.50 | 107.60 |
-| USDind | -0.41 | 5.83 | -25.40 | 33.30 |
-| UNEM | 1.15 | 0.86 | 0.30 | 4.90 |
-| IPI | 100.42 | 7.85 | 75.40 | 119.00 |
-| IMP | 101.14 | 19.72 | 57.50 | 150.50 |
-
-### 🔍 Key Observations
-
-- **DEPOS** grew from **16,564** (Jan 2014) to **65,871** (Jan 2026) — **~4x increase**
-- **WAGE** grew from **29,255** (Jan 2014) to **139,727** (Dec 2025) — **~4.8x increase**
-- **DEP1** (deposit rates) peaked at **21.49%** (Dec 2024) and declined to **12.02%** (Feb 2026)
-- **CPI** spiked at **107.6%** (Mar 2022) — sanctions effect
-- **USDind** showed extreme volatility: **-25.4%** (Mar 2022) to **+33.3%** (Apr 2022)
-- **UNEM** peaked at **4.9%** (Sep 2020) — COVID-19 effect, then declined to **0.3%** (Oct 2025)
+1. [О дашборде](#1-о-дашборде)
+2. [Заказчик и пользователи](#2-заказчик-и-пользователи)
+3. [Ключевые вопросы дашборда](#3-ключевые-вопросы-дашборда)
+4. [Структура дашборда](#4-структура-дашборда)
+5. [Сценарий показа](#5-сценарий-показа)
+6. [Модель данных](#6-модель-данных)
+7. [Ключевые показатели (KPI)](#7-ключевые-показатели-kpi)
+8. [Визуализации](#8-визуализации)
+9. [Кастомный виджет](#9-кастомный-виджет)
+10. [Выводы и решения](#10-выводы-и-решения)
+11. [Технические детали](#11-технические-детали)
 
 ---
 
-## 2. Correlation Analysis
+## 1. О дашборде
 
-<details>
-<summary><b>📊 Full Correlation Matrix</b> (click to expand)</summary>
+Интерактивная информационная панель, которая показывает **динамику вкладов населения РФ с 2014 по 2026 год**, **прогноз до февраля 2027** по трём макроэкономическим сценариям и **качество прогнозной модели**.
 
-![Correlation Matrix](outputs/v1/01_correlation_matrix.png)
+**Задача:** дать единую картину — где мы были, куда идём, что влияет, насколько можно доверять прогнозу.
 
-</details>
+**Ключевая модель прогноза:** Full Ridge (38 признаков), обучена на периоде январь 2015 — февраль 2026 (134 наблюдения).
 
-### 📈 Strongest Positive Correlations with DEPOS
-
-| Rank | Feature | Correlation | Interpretation |
-|------|---------|-------------|----------------|
-| 1 | **WAGE** | **0.980** | Almost perfect correlation. As wages rise, people save more. |
-| 2 | **SERV** | **0.978** | Volume of paid services; economic activity drives deposits. |
-| 3 | **DEP1** | **0.835** | Deposit rates; higher rates attract more deposits. |
-
-### 📉 Strongest Negative Correlations with DEPOS
-
-| Rank | Feature | Correlation | Interpretation |
-|------|---------|-------------|----------------|
-| 1 | **IPI** | **-0.685** | Industrial production; inverse relationship. |
-| 2 | **UNEM** | **-0.605** | Unemployment; more unemployment = less savings. |
-
-<details>
-<summary><b>⚠️ Multicollinearity Warning</b></summary>
-
-- **VIF > 10** for most predictors (CPI: 327, IPI: 181, SERV: 161, WAGE: 108)
-- This justifies using **Ridge regularization** (handles collinearity effectively)
-
-
-</details>
+**Метрики модели:**
+- R²_test = **0.9422** (объясняет ~94% дисперсии)
+- RMSE = **566.09** млрд руб.
+- MAE = **489.89** млрд руб.
+- R²_gap = **0.0565** (минимальное переобучение)
 
 ---
 
-## 3. Time Series Analysis
+## 2. Заказчик и пользователи
 
-<details>
-<summary><b>📈 Graph: Time Series of All Indicators</b> (click to expand)</summary>
+**Заказчик:** аналитический департамент коммерческого банка (розничный блок).
 
-![Time Series All](outputs/v1/01_time_series_all.png)
+**Основные пользователи дашборда:**
 
-</details>
-
----
-
-<details>
-<summary><b>📅 DEPOS — Household Deposits</b></summary>
-
-- **2014–2023:** Approximate **linear growth** with minor seasonal deviations.
-- **December 2022 onward:** Clear **change in slope** — the growth rate accelerated significantly.
-- **Seasonality:** Not visually dominant, but statistically significant (confirmed in Block 2).
-- **💡 Future Work:** Consider introducing a **dummy variable for slope change** (post-Dec 2022) to capture this structural break.
-  - ✅ **Accounted for in Block 4:** `post_2022` dummy (+0.0427 R² improvement)
-  - ✅ **Confirmed in Block 2:** Chow test p < 0.05
- 
-</details>
-
-<details>
-<summary><b>📅 WAGE — Average Monthly Wage</b></summary>
-
-- **Exponential growth** with **strong seasonality** (peaks every 12 months, typically December).
-- **First value (Jan 2014):** 29,255 RUB  
-  **Last value (Dec 2025):** 139,727 RUB — **~4.8x increase**.
-- Strong correlation with DEPOS (0.980).
-- ✅ **Accounted for in Block 4:** `WAGE_lag_1` — top feature (+0.0815 R² improvement)
-
-</details>
-
-<details>
-<summary><b>📅 SERV — Volume of Paid Services</b></summary>
-
-- **Linear growth** with moderate seasonality.
-- **Notable drop:** April–May 2020 (COVID-19 lockdown) — from ~850 to ~550 billion RUB.
-- **Recovery:** Full recovery by mid-2021, continued linear growth afterward.
-- **💡 Future Work:** Consider a **COVID-19 dummy** for April–May 2020.
-  - ✅ **Accounted for in Block 4:** `covid` dummy (+0.0083 R² improvement)
-
-</details>
-
-<details>
-<summary><b>📅 DEP1 — Deposit Rates (1–3 years)</b></summary>
-
-- **No stable trend:** period of growth, decline, and fluctuations.
-- **2015–2021:** Gradual decline (from ~13% to ~4%).
-- **2022:** Brief spike due to sanctions, then decline again.
-- **2024:** Sharp increase to **21.49%** (Dec 2024), then decline starting 2025.
-- **No monthly seasonality.**
-
-</details>
-
-<details>
-<summary><b>📅 CRED1 — Credit Rates (up to 1 year)</b></summary>
-
-- **2015–2021:** Long-term decline (from ~29% to ~13%).
-- **2021–2026:** Moderate upward trend, with some sharp spikes.
-- **Correlation with DEPOS:** Weak (0.11).
-
-</details>
-
-<details>
-<summary><b>📅 CPI — Consumer Price Index (Inflation)</b></summary>
-
-- **Stable around 100.6** with minor monthly fluctuations.
-- **Two major spikes:**
-  - **Jan 2015:** 103.9% — currency crisis.
-  - **Mar 2022:** 107.6% — sanctions effect.
-- **💡 Future Work:** Consider **dummy variables** for these two events.
-  - ℹ️ **Tested in Block 4:** CPI dummy not added — no significant improvement
-
-</details>
-
-<details>
-<summary><b>📅 USDind — USD Exchange Rate Index</b></summary>
-
-- **Fluctuations around 0** with high volatility.
-- **Extreme range:** March–April 2022 (-25.4% to +33.3%).
-- **Correlation with DEPOS:** Very weak (0.014).
-
-</details>
-
-<details>
-<summary><b>📅 UNEM — Registered Unemployment Rate</b></summary>
-
-- **Overall negative trend:** from ~1.2% to ~0.3%.
-- **COVID-19 spike:** March 2020 – January 2022, with a parabolic shape peaking at **4.9%** (Sep 2020).
-- **💡 Future Work:** Consider a **quadratic term** or **COVID-19 dummy** for this period.
-  - ✅ **Accounted for in Block 4:** `covid` dummy
-  - ✅ **Accounted for in Block 3:** UNEM² tested (+0.0030 R², partial confirmation)
-  - ✅ **Accounted for in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
-
-</details>
-
-<details>
-<summary><b>📅 IPI — Industrial Production Index</b></summary>
-
-- **Likely stationary:** fluctuations around 100 with no trend.
-- **Strong seasonality** but no trend amplification.
-- **Correlation with DEPOS:** Weak negative.
-
-</details>
-
-<details>
-<summary><b>📅 IMP — Imports</b></summary>
-
-- **No clear trend:** periods of growth and decline appear chaotic.
-- **Extreme values:** 57.5 (Jan 2015) to 150.5 (Mar 2023).
-
-</details>
+| Роль | Что решает |
+|------|------------|
+| **Продуктовый аналитик по депозитам** | Планирует депозитные программы, оценивает выполнение планов |
+| **Руководитель розничного блока** | Принимает решения по ставкам и маркетингу |
+| **Финансовый контролёр** | Отслеживает ликвидность и прогноз притока средств |
+| **Инвестор / внешний аналитик** | Оценивает доверие населения к банковской системе |
 
 ---
 
-## 4. Scatter Plot Analysis
+## 3. Ключевые вопросы дашборда
 
-<details>
-<summary><b>📈 Graph: Scatter Plots — DEPOS vs All Predictors</b> (click to expand)</summary>
-
-![Scatter Plots](outputs/v1/01_scatter_plots.png)
-
-</details>
-
----
-
-<details>
-<summary><b>📈 DEPOS vs WAGE</b></summary>
-
-- **Strong linear relationship** (R² = 0.891).
-- Main cloud follows the linear trend line.
-- **Interesting pattern:** A small group of points lies **below the trend line**, moving **parallel** to it and diverging as WAGE increases.
-- **💡 Future Work:** Investigate these points — they may represent specific time periods (e.g., crisis years).
-  - ✅ **Accounted for in Block 4:** `anomaly_wage` dummy with -2σ threshold (+0.0264 R² improvement, 5 anomalies identified)
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs SERV</b></summary>
-
-- **Very strong linear relationship** (R² = 0.941).
-- Several outliers at DEPOS ≈ 32,000, parallel to the x-axis.
-- **💡 Future Work:** Check if outliers correspond to specific years (e.g., 2020, 2022).
-  - ℹ️ **Tested in Block 4:** SERV² tested in Block 3 — NOT confirmed (-0.9897 R², severe multicollinearity)
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs DEP1</b></summary>
-
-- **Moderate linear relationship** (R² = 0.431).
-- Points form **semi-loops** rather than a single cloud.
-- **Interesting pattern:** Below DEPOS ≈ 33,000 and DEP1 < 13, points align almost perfectly along the **hypotenuse of a triangle**.
-- **💡 Future Work:** This non-linear pattern could justify **polynomial terms** or **interaction effects**.
-  - ℹ️ **Tested in Block 3:** DEP1² NOT confirmed (-0.0003 R²)
-  - ✅ **Accounted for in Block 4:** UNEM×DEP1 interaction (+0.0221 R² improvement)
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs CRED1</b></summary>
-
-- **Weak linear relationship** (R² = 0.11).
-- **Two distinct clusters** emerge from point (~13, ~32,000):
-  - **Cluster 1:** Strong positive slope.
-  - **Cluster 2:** Strong negative slope.
-- **💡 Future Work:** The two clusters may represent different economic regimes (pre-2022 vs post-2022). Consider a **regime-switching model**.
-  - ❌ **Tested in Block 4:** `regime_cred1` dummy — WORSENED model when added in isolation (-0.1148 R²), but included in final 38-feature model as its negative effect is compensated by other features
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs CPI</b></summary>
-
-- **No linear relationship** (R² ≈ 0).
-- Cloud is evenly distributed vertically from CPI ≈ 100 to 101.5.
-- **One extreme outlier:** (107.6, 33,465) — March 2022.
-- **💡 Future Work:** Dummy for March 2022.
-  - ℹ️ **Tested in Block 4:** Not added — no significant improvement in preliminary tests
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs USDind</b></summary>
-
-- **No linear relationship** (R² = 0.014).
-- Cloud is evenly distributed from USDind ≈ -8 to 9.
-- Several outliers outside this range.
-- **💡 Future Work:** Consider absolute value or volatility (rolling standard deviation) as a feature.
-  - ℹ️ **Tested in Block 4:** USDind lags mostly neutral/negative — not included in key features
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs UNEM</b></summary>
-
-- **Two distinct patterns:**
-  - **Cluster 1:** Negative slope from (0.4, 35,000) to (1.3, 17,000).
-  - **Cluster 2:** Points parallel to the UNEM axis (0.7 to 5.0).
-- **💡 Future Work:** The second cluster corresponds to the COVID-19 period — consider **COVID-19 dummy**.
-  - ✅ **Accounted for in Block 4:** `covid` dummy (+0.0083 R² improvement)
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs IPI</b></summary>
-
-- **No linear relationship.** Points are uniformly scattered.
-- No clear pattern.
-
-</details>
-
-<details>
-<summary><b>📈 DEPOS vs IMP</b></summary>
-
-- **No linear relationship.** Points are uniformly scattered.
-- No clear pattern.
-
-</details>
+| Вопрос | Ответ в дашборде |
+|--------|------------------|
+| Сколько вкладов сейчас? | KPI «Факт на фев 2026» = **64 794,40** млрд руб. |
+| Какой прогноз на год вперёд? | KPI «Прогноз на фев 2027» = **70 046** млрд руб. |
+| Какой ожидается прирост? | KPI «Прирост за 12 мес» = **+8,11%** |
+| Насколько точна модель? | KPI «Точность (R²)» = **0,94** |
+| Как менялась динамика 2014–2027? | График `Chart_Forecast` |
+| Что двигает вклады? | SHAP-чарт `Chart_SHAP` |
+| Влияют ли зарплаты на вклады? | `Chart_WAGE_DEPOS` |
+| Есть ли сезонность? | `Chart_Seasonality` |
+| Какая модель лучшая? | `Table_Models` + HTML-светофор |
 
 ---
 
-## 5. Stationarity Analysis
+## 4. Структура дашборда
 
-### 🔬 Augmented Dickey-Fuller Test for DEPOS
+### Экран 1 — «Обзор»
 
-| Metric | Value |
-|--------|-------|
-| ADF Statistic | 0.3935 |
-| p-value | 0.9813 |
-| **Conclusion** | **Non-stationary ❌** |
+Первый экран — быстрая сводка. Пользователь за 10 секунд понимает состояние рынка вкладов.
 
-<details>
-<summary><b>💡 Interpretation</b></summary>
+**Виджеты:**
+- 4 KPI-карточки: факт, прогноз, прирост, точность
+- Линейный график `Chart_Forecast` — динамика 2014–2027 с тремя сценариями
+- Фильтры «Год» и «Модель»
 
-The DEPOS series is **not stationary** — it has a strong upward trend (visible in the time series plot). This means that:
+### Экран 2 — «Драйверы»
 
-- ARIMA/SARIMA models (which require stationarity) would need **differencing** (1st or 2nd order).
-- Machine learning models (Ridge, Random Forest) are more flexible and don't require stationarity.
+Второй экран — что стоит за цифрами. Почему вклады растут, что на них влияет.
 
-</details>
+**Виджеты:**
+- `Chart_SHAP` — SHAP-важность признаков (топ-13)
+- `Chart_WAGE_DEPOS` — комбинированный график зарплат и вкладов
+- `Chart_Seasonality` — сезонные отклонения по месяцам
 
-<details>
-<summary><b>🔮 Future Work</b></summary>
+### Экран 3 — «Качество прогноза»
 
-**SARIMA** model was built in [Block 5](key_insights_5.md). Key findings:
-- Required **second-order differencing (d=2)**
-- Annual seasonality (s=12) identified via ACF/PACF
-- SARIMA(3,2,3)×(0,0,1,12) with uncorrelated residuals (Ljung-Box p > 0.05)
-- However, poor forecasting performance (R²_test < 0) — structural break not captured
+Третий экран — насколько можно доверять прогнозу.
 
-</details>
+**Виджеты:**
+- `Table_Models` — сравнение 6 моделей по R², RMSE, MAE, MAPE
+- `HTML_Accuracy_Gauge` — светофор точности прогноза (кастомный виджет)
 
 ---
 
-## 6. Multicollinearity Diagnostics
+## 5. Сценарий показа
 
-### 📊 VIF (Variance Inflation Factor) Results
+### Шаг 1. Открыть Экран «Обзор»
 
-| Feature | VIF | Status |
-|---------|-----|--------|
-| CPI | 327.1 | ⚠️ Extreme multicollinearity |
-| IPI | 180.7 | ⚠️ Extreme multicollinearity |
-| SERV | 160.9 | ⚠️ Extreme multicollinearity |
-| WAGE | 108.2 | ⚠️ Extreme multicollinearity |
-| CRED1 | 76.9 | ⚠️ High multicollinearity |
-| IMP | 40.5 | ⚠️ High multicollinearity |
-| DEP1 | 33.3 | ⚠️ High multicollinearity |
-| UNEM | 4.97 | ✅ No issue |
-| USDind | 1.03 | ✅ No issue |
+- **Смотрим 4 KPI сверху:** факт (64 794), прогноз (70 046), прирост (+8,11%), R² (0,94).
+- **Проверяем график:** как факт переходит в прогноз, где сценарии расходятся.
+- **Если нужно — фильтруем** по году (2014–2027) или меняем модель (для R²).
 
-<details>
-<summary><b>✅ Solutions Applied</b></summary>
+**Ключевое наблюдение:** факт вырос в 4 раза с 2014 года, прогноз сохраняет восходящий тренд.
 
-- **Ridge Regression** (regularization) handles multicollinearity naturally.
-- **Feature selection** (removing insignificant variables) reduces collinearity.
-- **VIF > 10** indicates severe multicollinearity — typical in macroeconomics (many indicators move together).
-- ✅ **Block 4:** Feature Engineering added 25 new features, improved R²_test from 0.8486 to 0.9422
+### Шаг 2. Перейти на Экран «Драйверы»
 
-</details>
+- **SHAP-чарт** показывает топ-5 факторов: прошлые вклады, лаги, SERV, DEP1, WAGE.
+- **График WAGE+DEPOS** подтверждает сильную связь (корреляция 0.94) — зарплаты и вклады растут синхронно.
+- **Сезонность:** пик в январе (+882 млрд руб.), спад в ноябре (−472 млрд).
 
----
+### Шаг 3. Проверить Экран «Качество прогноза»
 
-## 7. Model Performance Comparison
+- **Таблица моделей** — сравнение 6 подходов. Full Ridge лидирует с R² = 0.94.
+- **HTML-светофор** — визуальная оценка: **зелёная зона (отлично)**.
+- Понимаем: прогнозу **можно доверять**, ошибка ~566 млрд руб. (~0,87% от объёма).
 
-### 📊 Test Set Metrics (March 2025 — February 2026)
+### Шаг 4. Вернуться к Обзору и принять решение
 
-| Model | R² | MAE | RMSE | MAPE |
-|-------|-----|-----|------|------|
-| Linear Regression (full) | 0.8433 | 754.08 | 931.99 | 1.22% |
-| Linear Regression (reduced)* | 0.8474 | 736.24 | 919.85 | 1.20% |
-| **Ridge Regression (alpha=1.0)** | **0.8486** | **807.96** | **916.32** | **1.32%** |
-| Ridge Regression (alpha=0.001) | 0.8433 | 807.96 | 932.05 | 1.32% |
-| Random Forest | -7.4829 | 6,319.14 | 6,858.17 | 10.21% |
-
-*Reduced model uses only significant features (p < 0.05): WAGE, CPI, USDind, IPI, DEPOS_lag_1*
-*MAPE is the Mean Absolute Percentage Error — a 10% error means forecasts deviate from actuals by 10% on average.*
-
-### 🏆 Best Model: Ridge Regression (alpha=1.0)
-
-- **R² = 0.8486** (explains ~85% of variance)
-- **Average prediction error:** ~808 billion RUB (~1.3% of DEPOS)
-- **Handles multicollinearity** effectively
-- **Coefficients are interpretable** — important for business insights
-
-<details>
-<summary><b>❌ Why Random Forest Failed</b></summary>
-
-| Issue | Explanation |
-|-------|-------------|
-| R² = -7.48 | Worse than predicting the mean |
-| Small sample | Only 134 training records — trees need more data |
-| Time series | Trees don't capture temporal order |
-| Overfitting | The model "memorized" the training data |
-
-**💡 Lesson:** Not all models work for all tasks. Simpler, regularized models (Ridge) outperform complex models (Random Forest) on small time series data.
-
-</details>
+- Планировать приток вкладов в диапазоне **69 353 — 70 934** млрд руб. (пессимист — оптимист).
+- Ориентир — **базовый сценарий 70 046** млрд руб.
+- Учесть сезонность: ожидать отток в ноябре–декабре.
 
 ---
 
-## 7.1. Full Model Metrics: Training vs Test Performance
+## 6. Модель данных
 
-### 📊 Ridge Regression (alpha=1.0) — Complete Metrics
+### Логическая модель `deposits_model`
 
-To enable proper comparison with feature-engineered models (Block 4), we calculated comprehensive metrics on both training and test sets.
+Основная модель для дашборда. Объединяет факт и прогноз по дате.
 
-| Dataset | Metric | Value |
-|---------|--------|-------|
-| **Training (n=122)** | R²_train | **0.9963** |
-| | R²_adj_train | **0.9959** |
-| | AIC | **1919.49** |
-| | BIC | **1958.75** |
-| | RSS | 34,219,584 |
-| **Test (n=12)** | R²_test | **0.8486** |
-| | RMSE | 916.32 bln RUB |
-| | MAE | 807.96 bln RUB |
+```
+fact_deposits (146 строк, 2014-01 … 2026-02)
+│
+│ FULL OUTER JOIN по Date
+│
+▼
+forecast_scenarios (12 строк, 2026-03 … 2027-02)
+```
 
-### ⚠️ Overfitting Assessment
+**Вычисляемое поле:** `common_date = COALESCE(date, default_9n6s__date)` — единая временная ось 2014–2027.
 
-- **R²_train - R²_test = 0.1478** — moderate overfitting detected
-- The model explains **99.6% of training variance** but only **84.9% of test variance**
-- This gap suggests that adding more features (Feature Engineering in Block 4) could help, but regularization is crucial
-- ✅ **Block 4 result:** Full Ridge reduced gap to 0.0565
+**Вспомогательные модели:**
+- `metrics_model` — метрики 6 моделей (без связи с датами)
+- `features_model` — SHAP-важность 13 признаков
+- `seasonality_model` — сезонная компонента по 12 месяцам
 
-### 📊 Comparison with OLS (Full vs Reduced)
+### Источники данных
 
-| Model | Features | R²_test | RMSE_test | MAE_test |
-|-------|----------|---------|-----------|----------|
-| OLS (full, all features) | 13 | 0.8433 | 932.00 | 754.08 |
-| OLS (reduced, p<0.05) | 5 | 0.8474 | 919.85 | 736.24 |
-| **Ridge (alpha=1.0)** | **13** | **0.8486** | **916.32** | **807.96** |
-
-**Key insight:** Ridge with all features outperforms OLS with only significant features, confirming that even "insignificant" variables contribute useful information when properly regularized.
+| Файл | Содержимое | Строк |
+|------|------------|-------|
+| `fact_deposits.csv` | Исторический факт + макрофакторы | 146 |
+| `forecast_scenarios.csv` | Прогноз 3 сценария + 95% PI | 12 |
+| `model_metrics.csv` | Метрики 6 моделей | 6 |
+| `feature_importance.csv` | SHAP-важность признаков | 13 |
+| `seasonality.csv` | Сезонная компонента | 12 |
 
 ---
 
-## 7.2. Residual Diagnostics (Training Set)
+## 7. Ключевые показатели (KPI)
 
-**Model:** Ridge Regression (alpha=1.0) — best baseline model from Section 7.
+### Карточка 1: Факт на февраль 2026
 
-**Why training set?** Residual diagnostics assess model assumptions (normality, homoscedasticity, independence). These should be verified on the data used for fitting, not on held-out test data.
+- **Значение:** 64 794,40 млрд руб.
+- **Расчёт:** `MAX(if([calc__common_date] LIKE '2026-02%', [depos], 0))`
+- **Смысл:** актуальный объём вкладов на конец наблюдённого периода.
 
-### 📊 Diagnostic Test Results
+### Карточка 2: Прогноз на февраль 2027 (база)
 
-| Test | Statistic | p-value | Result |
-|------|-----------|---------|--------|
-| **Normality** (Shapiro-Wilk) | W = 0.9923 | 0.7372 | ✅ Normal |
-| **Homoscedasticity** (Breusch-Pagan) | LM = 8.1052 | 0.0044 | ⚠️ Heteroscedasticity |
-| **Autocorrelation lag 1** (Breusch-Godfrey) | LM = 0.9888 | 0.3200 | ✅ No autocorrelation |
-| **Autocorrelation lag 4** (Breusch-Godfrey) | LM = 25.0489 | 0.0000 | ⚠️ Autocorrelation (seasonal) |
+- **Значение:** 70 046 млрд руб.
+- **Расчёт:** `MAX(if([calc__common_date] LIKE '2027-02%', [baseline], 0))`
+- **Смысл:** прогноз на 12 месяцев вперёд по базовому сценарию.
 
-### 🔬 Why Breusch-Godfrey instead of Durbin-Watson?
+### Карточка 3: Прирост за 12 месяцев
 
-| Aspect | Durbin-Watson | Breusch-Godfrey |
-|--------|---------------|-----------------|
-| **Lagged dependent variables** | ❌ Biased towards 2 | ✅ Unbiased |
-| **Higher-order autocorrelation** | ❌ Tests only lag 1 | ✅ Tests any lag order |
-| **Small sample power** | ⚠️ Lower | ✅ Higher |
-| **Our case** | DW = 1.794 (seems OK) | BG lag 4: p = 0.000 (reveals problem!) |
+- **Значение:** +8,11%
+- **Расчёт:** `(прогноз 2027 − факт 2026) / факт 2026 × 100`
+- **Смысл:** ожидаемый темп роста объёма вкладов.
 
-**Key insight:** DW test would have missed the seasonal autocorrelation (lag 4) that Breusch-Godfrey detected. This seasonal pattern in residuals suggests that monthly dummy variables (added in Block 4) are well-justified.
+### Карточка 4: Точность модели (R²)
 
-<details>
-<summary><b>📈 Diagnostic Plots</b> <i>(нажмите, чтобы развернуть)</i></summary>
-
-![Residual Diagnostics](outputs/v1/01_diagnostics_best_model.png)
-
-**Interpretation:**
-- **Histogram + Q-Q plot:** Residuals are approximately normal (slight right skew)
-- **Residuals vs Fitted:** Some heteroscedasticity visible (fan-shaped pattern at higher values)
-- **ACF plot:** 
-  - Lag 1: not significant (within confidence band)
-  - **Lag 2: significant** (exceeds upper bound) — main autocorrelation spike
-  - Lags 4 and 12: at the upper boundary of significance
-  - **Conclusion:** Seasonal autocorrelation confirmed by Breusch-Godfrey test (lag 4, p = 0.000)
-
-</details>
+- **Значение:** 0,94
+- **Источник:** `model_metrics`, поле `R2_test`, фильтр `Model = Full Ridge (38)`
+- **Смысл:** доля объяснённой дисперсии — насколько модели можно доверять.
 
 ---
 
-## 7.3. Model Comparison Framework (for Block 4)
+## 8. Визуализации
 
-The following metrics will be used to compare baseline Ridge (13 features) with feature-engineered models (Block 4):
+Дашборд использует **7 типов визуализаций** (ТЗ требует минимум 5):
 
-Full comparison available in [Block 4](key_insights_4.md).
+| № | Тип | Название | Назначение |
+|---|-----|----------|------------|
+| 1 | **KPI** | KPI_DEPOS, KPI_Baseline, KPI_Growth, KPI_R2 | Ключевые числа |
+| 2 | **Линейный график** | Chart_Forecast | Динамика + прогноз |
+| 3 | **Столбчатая гориз.** | Chart_SHAP | Важность признаков |
+| 4 | **Комбинированная** | Chart_WAGE_DEPOS | Связь зарплат и вкладов |
+| 5 | **Столбчатая верт.** | Chart_Seasonality | Сезонные отклонения |
+| 6 | **Таблица** | Table_Models | Сравнение моделей |
+| 7 | **HTML** | HTML_Accuracy_Gauge | Светофор точности |
 
-| Criterion | Baseline Ridge | Full Ridge (Block 4) |
-|-----------|---------------|---------------------|
-| R²_train | 0.9963 | 0.9987 |
-| R²_adj_train | 0.9959 | 0.9981 |
-| AIC | 1919.49 | 1875.54 |
-| BIC | 1958.75 | 1984.90 |
-| **R²_test** | **0.8486** | **0.9422** |
-| **RMSE_test** | **916.32** | **566.09** |
-| **R²_gap** | **0.1477** | **0.0565** |
+### Описание ключевых визуализаций
 
-**✅ Target achieved:** R²_test improved by +9.36 pp, overfitting gap reduced by 62%.
+**Chart_Forecast** — линейный график с 6 сериями:
+- `DEPOS` — факт (синяя сплошная)
+- `BASELINE`, `OPTIMISTIC`, `PESSIMISTIC` — три сценария прогноза
+- `LOWER_95`, `UPPER_95` — границы 95% доверительного интервала
 
----
+**Chart_SHAP** — горизонтальный бар-чарт топ-13 признаков. Первые 3 — лаги DEPOS. Далее SERV, DEP1, WAGE.
 
-## 8. Ridge Regression Coefficients: What Drives Household Deposits?
+**Chart_WAGE_DEPOS** — комбинированный график: WAGE (зелёный) и DEPOS (синий). Видна синхронность и декабрьские пики зарплат.
 
-### 🔺 Top Positive Drivers (Increase Deposits)
+**Chart_Seasonality** — вертикальные столбцы по месяцам. Зелёные — положительные отклонения, красные — отрицательные. Пик в январе.
 
-| Rank | Feature | Coefficient | Interpretation |
-|------|---------|-------------|----------------|
-| 1 | **DEPOS_lag_1** | **+4,153.97** | Strongest effect: past month deposits are the best predictor |
-| 2 | **DEPOS_lag_3** | **+2,177.65** | Past deposits at 3-month lag |
-| 3 | **DEPOS_lag_6** | **+1,058.05** | Past deposits at 6-month lag |
-| 4 | **SERV** | **+591.35** | Economic activity drives savings |
-| 5 | **DEP1** | **+434.42** | Higher rates attract more deposits |
-
-### 🔻 Top Negative Drivers (Decrease Deposits)
-
-| Rank | Feature | Coefficient | Interpretation |
-|------|---------|-------------|----------------|
-| 1 | **IPI** | **-378.23** | Industrial production: more production = less savings? |
-| 2 | **USDind** | **-198.66** | USD exchange rate: ruble depreciation reduces deposits |
-| 3 | **CPI** | **-167.89** | Inflation: erodes purchasing power, reduces savings |
-
-### 💡 Interesting Findings
-
-- **CRED1** (+88.94) and **IMP** (+25.99) have slight **positive** effects — not draggers.
-- All coefficients align with **economic intuition**.
-- **Past deposits are the strongest predictor** — deposits have strong inertia.
+**Table_Models** — 6 строк × 5 колонок. Full Ridge подсвечен зелёным.
 
 ---
 
-## 9. Hyperparameter Tuning: Ridge Alpha Selection
+## 9. Кастомный виджет
 
-### 🔧 What is Alpha?
+**HTML-светофор точности (`HTML_Accuracy_Gauge`)**
 
-- Controls the strength of **regularization** in Ridge regression.
-- **Higher alpha** → stronger penalty on coefficients → simpler model.
-- **Lower alpha** → closer to ordinary linear regression.
+Реализован на чистом HTML+CSS. Показывает:
+- Большое значение R² = **0.94**
+- Цветовую шкалу: красная (плохо, <0.7), жёлтая (средне, 0.7–0.9), **зелёная (отлично, >0.9)**
+- Активная зона подсвечена glow-эффектом
+- Пояснение: «Модель Full Ridge объясняет 94% дисперсии объёма вкладов»
 
-### 📊 Cross-Validation Results
-
-| Metric | Value |
-|--------|-------|
-| Tested range | 0.001 to 1000 (50 values, log scale) |
-| **Best alpha (CV)** | **0.001** — close to linear regression |
-| **Original alpha (1.0)** | R² = 0.8486, RMSE = 916.32 |
-| **Optimal alpha (0.001)** | R² = 0.8433, RMSE = 932.05 |
-
-### ✅ Conclusion
-
-The original alpha **(1.0) is already optimal**. Stronger regularization (alpha > 1) would reduce performance. The cross-validation suggests that the model benefits from mild regularization, but not too much.
+**Зачем нужен:** закрывает требование ТЗ «минимум 1 кастомный виджет» и даёт **мгновенную визуальную оценку качества прогноза** — не нужно читать числа в таблице.
 
 ---
 
-## 10. Executive Summary
+## 10. Выводы и решения
 
-### 🎯 Key Takeaways
+### 📈 Ключевые выводы
 
-| # | Finding | Details |
-|---|---------|---------|
-| 1 | **Ridge Regression (alpha=1.0)** is the best baseline with R²_test = **0.8486** | Training: R² = 0.9963, AIC = 1919.49 |
-| 2 | **Past deposits (lag 1, 3, 6)** are the strongest predictors | DEPOS_lag_1 coefficient: +4,153.97 |
-| 3 | **Moderate overfitting** detected (R²_train - R²_test = 0.1477) | ✅ **Block 4 result:** Full Ridge reduced gap to 0.0565 |
-| 4 | **Seasonal autocorrelation** (lag 4) found in residuals | Monthly dummies justified, SARIMA built in Block 5 |
-| 5 | **Heteroscedasticity** present (Breusch-Pagan p = 0.0044) | ✅ **Block 4 result:** Fixed (p = 0.787) |
-| 6 | **Random Forest failed** (R² = -7.48) | Small sample + time series = poor fit |
-| 7 | **Multicollinearity is severe** (VIF > 100) | Ridge regularization is essential |
+1. **Вклады растут устойчиво** — с 16 564 млрд руб. (2014) до 64 794 млрд руб. (2026), рост в ~4 раза.
+2. **Структурный сдвиг после декабря 2022** — темп роста ускорился в 4 раза (тест Чоу, p < 0.05).
+3. **Основные драйверы** — прошлые вклады (инерция), доходы населения (WAGE), ставки по депозитам (DEP1).
+4. **Прогноз на февраль 2027** — базовый сценарий 70 046 млрд руб. (+8,11% за год).
+5. **Сезонность стабильна** — пик в январе (+882 млрд), спад в ноябре (−472 млрд).
+6. **Модель Full Ridge (38 признаков)** — лучшая по R² = 0.9422, ошибка ~566 млрд руб.
 
-### 📊 Full Diagnostic Summary — Ridge (alpha=1.0), 13 features
+### 🎯 Решения на основе дашборда
 
-| Aspect | Result | Status |
-|--------|--------|--------|
-| Model fit (training) | R² = 0.9963 | ✅ Excellent |
-| Predictive power (test) | R² = 0.8486 | ✅ Good |
-| Overfitting | Gap = 0.1477 | ⚠️ Moderate (reduced to 0.0565 in Block 4) |
-| Normality of residuals | Shapiro-Wilk p = 0.7372 | ✅ Normal |
-| Homoscedasticity | Breusch-Pagan p = 0.0044 | ⚠️ Heteroscedastic |
-| Autocorrelation (lag 1) | Breusch-Godfrey p = 0.3200 | ✅ None |
-| Autocorrelation (lag 4) | Breusch-Godfrey p = 0.0000 | ⚠️ Seasonal (addressed in Block 5) |
+| Решение | Обоснование |
+|---------|-------------|
+| **Планировать ликвидность** с учётом сезонных оттоков | Ноябрь–декабрь — традиционный спад |
+| **Усилить маркетинг депозитов** в месяцы спада | Октябрь–декабрь — низкая активность |
+| **Пересчитывать прогноз ежемесячно** | По мере поступления новых данных |
+| **Следить за WAGE и DEP1** | Ведущие индикаторы изменений |
+| **Использовать базовый сценарий** для планирования | 70 046 млрд руб. — наиболее вероятный |
+| **Учитывать диапазон 69 353–70 934** | Пессимистичный и оптимистичный сценарии |
 
-### 📈 Visual Patterns Discovered
+### 📊 Диапазоны для планирования
 
-| Pattern | Variable | Description | Addressed In |
-|---------|----------|-------------|--------------|
-| Slope change | DEPOS | Post-Dec 2022 growth acceleration | ✅ Block 4 (`post_2022`, +0.0427) |
-| Exponential + seasonality | WAGE | Strong 12-month cycles | ✅ Block 4 (`WAGE_lag_1`, +0.0815) |
-| Crisis drop | SERV | April–May 2020 COVID-19 drop | ✅ Block 4 (`covid`, +0.0083) |
-| Non-linear | DEPOS vs DEP1 | Triangle pattern (semi-loops) | ✅ Block 4 (UNEM×DEP1, +0.0221) |
-| Two regimes | DEPOS vs CRED1 | Positive vs negative slope clusters | ❌ Block 4 (`regime_cred1` tested, -0.1148 in isolation, but included in final model |
-| Parabolic spike | UNEM | COVID-19 peak (Sep 2020) | ✅ Block 4 (`covid`, +0.0083) |
-| Extreme spikes | CPI, USDind | 2015 and 2022 crises | ℹ️ Not added (no significant improvement) |
-| Seasonal residuals | Model errors | Significant at lag 4 | ✅ Block 5 (SARIMA with s=12) |
-
-### 🚀 Project Progress
-
-| Step | Status | Link |
-|------|--------|------|
-| Baseline model (13 features) | ✅ Done | This document |
-| Deep time series analysis | ✅ Done | [Block 2](key_insights_2.md) |
-| SHAP interpretation | ✅ Done | [Block 3](key_insights_3.md) |
-| Feature Engineering (38 features) | ✅ Done | [Block 4](key_insights_4.md) |
-| SARIMA modeling | ✅ Done | [Block 5](key_insights_5.md) |
-| Final forecast 2026-2027 | ✅ Done | [Block 6](key_insights_6_itog.md) |
+| Сценарий | Февраль 2027 | Прирост |
+|----------|--------------|---------|
+| **Базовый (наиболее вероятный)** | 70 046 млрд руб. | +8,11% |
+| **Оптимистичный** | 70 934 млрд руб. | +9,5% |
+| **Пессимистичный** | 69 353 млрд руб. | +7,0% |
+| **95% интервал (базовый)** | 69 350 — 70 742 млрд руб. | — |
 
 ---
 
-**📁 Project Repository:** [HopeSilkina/deposits_forecast_project](https://github.com/HopeSilkina/deposits_forecast_project)  
-**👤 Author:** Nadezhda Silkina  
-**📅 Last Updated:** 20 August 2026
+## 11. Технические детали
+
+### Стек технологий
+
+| Компонент | Технология |
+|-----------|-----------|
+| **BI-платформа** | AW BI (aw-demo.ru) |
+| **Источник данных** | CSV (4 файла) |
+| **Логические модели** | 4 (deposits, metrics, features, seasonality) |
+| **Типы визуализаций** | 7 |
+| **Кастомные виджеты** | 1 (HTML/CSS) |
+| **Фильтры** | 2 (Год, Модель) |
+
+### Использованные функции расчётов
+
+```sql
+-- Факт на конкретную дату (KPI)
+MAX(if([calc__common_date] LIKE '2026-02%', [depos], 0))
+
+-- Прирост в процентах (расчётный агрегат)
+(
+  MAX(if([calc__common_date] LIKE '2027-02%', [baseline], 0)) -
+  MAX(if([calc__common_date] LIKE '2026-02%', [depos], 0))
+) / MAX(if([calc__common_date] LIKE '2026-02%', [depos], 0)) * 100
+```
+
+### Ключевые технические решения
+
+1. **Единая временная ось** — вычисляемое поле `common_date = COALESCE(date, forecast_date)` объединяет факт (2014–2026) и прогноз (2026–2027) в одну шкалу.
+2. **Расчётные агрегаты в AW BI** требуют группировки. Обход для KPI: группировка по константе `one = 1`.
+3. **Сравнение дат-строк** — через `LIKE 'YYYY-MM%'` вместо сравнения с датой (тип поля `String`).
+
+---
+
+### Ограничения дашборда
+
+- **KPI-карточки фиксированы** на конкретные даты (фев 2026, фев 2027) и не реагируют на внешний фильтр «Год». Это **осознанное решение**: карточки — «якоря» дашборда, а динамика видна на графике.
+- **Горизонт прогноза — 12 месяцев.** Более длинные сроки снижают точность.
+- **Сценарии линейны** — не моделируют возможные шоки (геополитические, регуляторные).
+- **Данные до февраля 2026** — при поступлении новых данных прогноз нужно пересчитывать.
+
+---
+
+**📁 Проект:** [HopeSilkina/deposits_forecast_project](https://github.com/HopeSilkina/deposits_forecast_project)  
+**🔗 Дашборд:** https://aw-demo.ru/public/dashboard/WItcHNMCUJ2zuHkoVYP36sQ8yhbTp1xP  
