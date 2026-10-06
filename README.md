@@ -14,11 +14,12 @@
 5. [Final Results & Key Insights](#-final-results--key-insights)
 6. [Key Takeaways](#-key-takeaways)
 7. [Visual Outputs](#-visual-outputs)
-8. [Project Structure](#-project-structure)
-9. [Output Files Description](#-output-files-description)
-10. [Technology Stack](#-technology-stack)
-11. [Future Work](#-future-work)
-12. [About the Author](#-about-the-author)
+8. [Interactive Dashboard (AW BI)](#-interactive-dashboard-aw-bi)
+9. [Project Structure](#-project-structure)
+10. [Output Files Description](#-output-files-description)
+11. [Technology Stack](#-technology-stack)
+12. [Future Work](#-future-work)
+13. [About the Author](#-about-the-author)
 
 ---
 
@@ -145,6 +146,24 @@ The final forecast was generated under three macroeconomic scenarios ([Block 6](
 | Combined Model Comparison | Final Forecast (2026-2027) |
 |:---:|:---:|
 | [![Combined Model](outputs/v2/05_combined_model_comparison.png)](outputs/v2/05_combined_model_comparison.png)<br>*For detailed analysis, see [key_insights_5.md](key_insights_5.md)* | [![Final Forecast](outputs/v2/06_final_forecast_2026_2027.png)](outputs/v2/06_final_forecast_2026_2027.png)<br>*For detailed analysis, see [key_insights_6_itog.md](key_insights_6_itog.md)* |
+
+---
+
+### 📊 Interactive Dashboard (AW BI)
+
+**Прогноз вкладов населения РФ (2014–2027)** — интерактивная информационная панель, собранная в AW BI.
+
+**🔗 Ссылка:** [Deposits Forecast Dashboard](https://aw-demo.ru/public/dashboard/WItcHNMCUJ2zuHkoVYP36sQ8yhbTp1xP)
+
+**Что показывает:**
+- 4 KPI: факт (64 794 млрд руб.), прогноз (70 046 млрд руб.), прирост (+8,1%), точность модели (R² = 0,94)
+- Динамика вкладов 2014–2027 с тремя сценариями прогноза и 95% доверительным интервалом
+- SHAP-важность признаков, связь зарплат и вкладов, сезонность по месяцам
+- Сравнение 6 моделей и кастомный HTML-светофор точности
+
+**Структура:** 3 экрана — «Обзор», «Драйверы», «Качество прогноза».
+
+**📄 Полное описание дашборда:** [dashboard_story.md](dashboard_story.md)
 
 ---
 
