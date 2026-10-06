@@ -163,7 +163,7 @@ The final forecast was generated under three macroeconomic scenarios ([Block 6](
 
 **Структура:** 3 экрана — «Обзор», «Драйверы», «Качество прогноза».
 
-**📄 Полное описание дашборда:** [dashboard_story.md](dashboard_story.md)
+**📄 Полное описание дашборда:** [dashboard_story.md](docs/dashboard_story.md)
 
 ---
 
